@@ -4,8 +4,25 @@ import kidsImg from '../../assets/images/kids-training.jpg'
 import huddleImg from '../../assets/images/team-huddle.jpg'
 import conesImg from '../../assets/images/cones-training.jpg'
 import stadiumImg from '../../assets/images/stadium.jpg'
+import goalkeeperActionImg from '../../assets/images/goalkeeper-action.jpg'
+import goalkeeperDivingImg from '../../assets/images/goalkeeper-diving.jpg'
+import stadiumSunsetImg from '../../assets/images/stadium-sunset.jpg'
+import stadiumCrowdImg from '../../assets/images/stadium-crowd.jpg'
+import stadiumNightImg from '../../assets/images/stadium-night.jpg'
+import trainingAdultsImg from '../../assets/images/training-adults.jpg'
 
-const SEED_IMAGES = [kidsImg, huddleImg, conesImg, stadiumImg]
+const SEED_IMAGES = [
+  kidsImg,
+  huddleImg,
+  conesImg,
+  stadiumImg,
+  goalkeeperActionImg,
+  goalkeeperDivingImg,
+  stadiumSunsetImg,
+  stadiumCrowdImg,
+  stadiumNightImg,
+  trainingAdultsImg,
+]
 
 export default function Gallery() {
   const { data } = useCollection<GalleryItem>('gallery')

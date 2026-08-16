@@ -6,6 +6,8 @@ import heroImg from '../../assets/images/team-huddle.jpg'
 import trainingImg from '../../assets/images/kids-training.jpg'
 import conesImg from '../../assets/images/cones-training.jpg'
 import stadiumImg from '../../assets/images/stadium.jpg'
+import goalkeeperImg from '../../assets/images/goalkeeper-action.jpg'
+import stadiumSunsetImg from '../../assets/images/stadium-sunset.jpg'
 import { useCollection } from '../../hooks/useCollection'
 import type { Announcement, Program } from '../../types'
 import { orderBy, where } from '../../lib/collections'
@@ -165,7 +167,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {[trainingImg, conesImg, heroImg, stadiumImg].map((src, i) => (
+            {[trainingImg, goalkeeperImg, stadiumSunsetImg, stadiumImg].map((src, i) => (
               <img
                 key={i}
                 src={src}
