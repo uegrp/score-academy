@@ -1,0 +1,128 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function role() {
+      return isSignedIn() ? userDoc().data.role : null;
+    }
+
+    function isAdmin() {
+      return role() == 'admin' || role() == 'super_admin';
+    }
+
+    function isCoach() {
+      return role() == 'coach';
+    }
+
+    function isParent() {
+      return role() == 'parent';
+    }
+
+    // A coach may only touch teams/players they are assigned to.
+    function isAssignedCoachOfTeam(teamId) {
+      return isCoach() && teamId in userDoc().data.linkedTeamIds;
+    }
+
+    // A parent may only read/write their own player records.
+    function isOwningParent(parentUserId) {
+      return isParent() && request.auth.uid == parentUserId;
+    }
+
+    // ---- users ----
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      // Role can never be self-escalated by the user — only an admin can change it.
+      allow update: if isAdmin() ||
+        (request.auth.uid == userId && request.resource.data.role == resource.data.role);
+      allow delete: if isAdmin();
+    }
+
+    // ---- players ----
+    match /players/{playerId} {
+      allow read: if isAdmin() ||
+        isOwningParent(resource.data.parentUserId) ||
+        isAssignedCoachOfTeam(resource.data.teamId);
+      allow create: if isAdmin();
+      allow update: if isAdmin() || isAssignedCoachOfTeam(resource.data.teamId);
+      allow delete: if isAdmin();
+    }
+
+    // ---- coaches ----
+    match /coaches/{coachId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ---- teams ----
+    match /teams/{teamId} {
+      allow read: if true; // public — teams are shown on the marketing site
+      allow write: if isAdmin();
+    }
+
+    // ---- programs ----
+    match /programs/{programId} {
+      allow read: if true; // public
+      allow write: if isAdmin();
+    }
+
+    // ---- trainingSessions ----
+    match /trainingSessions/{sessionId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() || isAssignedCoachOfTeam(resource.data.teamId);
+      allow delete: if isAdmin();
+    }
+
+    // ---- attendance ----
+    match /attendance/{recordId} {
+      allow read: if isAdmin() || isCoach() ||
+        (isParent() && get(/databases/$(database)/documents/players/$(resource.data.playerId)).data.parentUserId == request.auth.uid);
+      allow create, update: if isAdmin() || isCoach();
+      allow delete: if isAdmin();
+    }
+
+    // ---- performanceEvaluations ----
+    match /performanceEvaluations/{evalId} {
+      allow read: if isAdmin() ||
+        (isCoach() && resource.data.coachId == request.auth.uid) ||
+        (isParent() && get(/databases/$(database)/documents/players/$(resource.data.playerId)).data.parentUserId == request.auth.uid);
+      allow create, update: if isAdmin() || isCoach();
+      allow delete: if isAdmin();
+    }
+
+    // ---- matches ----
+    match /matches/{matchId} {
+      allow read: if true; // public
+      allow write: if isAdmin();
+    }
+
+    // ---- announcements ----
+    match /announcements/{announcementId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ---- gallery ----
+    match /gallery/{itemId} {
+      allow read: if true; // public
+      allow write: if isAdmin();
+    }
+
+    // ---- registrations ----
+    match /registrations/{registrationId} {
+      allow create: if isSignedIn(); // anyone signed in (freshly created parent account) can submit
+      allow read: if isAdmin() || resource.data.parentEmail == request.auth.token.email;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}

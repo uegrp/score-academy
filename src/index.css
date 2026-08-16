@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  /* ---- SCORE brand palette ---- */
+  --color-pitch: #0d1210;         /* near-black, primary background */
+  --color-pitch-soft: #141b18;     /* elevated surface on pitch */
+  --color-bone: #f3f5ef;           /* primary light background / text-on-dark */
+  --color-bone-dim: #c9cfc6;       /* secondary text on dark */
+  --color-grass: #1e6b3c;          /* primary brand green */
+  --color-grass-bright: #2f9e57;   /* interactive green (hover/active) */
+  --color-gold: #c6a15b;           /* elite/featured accent, used sparingly */
+  --color-gold-bright: #dcb96f;
+  --color-line: #8a9089;           /* pitch-line gray, dividers, muted text */
+  --color-line-soft: #2a322d;      /* hairline on dark surfaces */
+  --color-danger: #c85c4c;
+  --color-warn: #cf9a3d;
+
+  /* ---- Type ---- */
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-stat: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bone);
+    color: var(--color-pitch);
+    font-family: var(--font-body);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    line-height: 1.02;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-grass-bright);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .input {
+    width: 100%;
+    border-radius: 0.65rem;
+    border: 1px solid color-mix(in srgb, var(--color-line) 45%, transparent);
+    background: var(--color-bone);
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+    color: var(--color-pitch);
+  }
+  .input:focus {
+    outline: 2px solid var(--color-grass-bright);
+    outline-offset: 1px;
+    border-color: transparent;
+  }
+  select.input {
+    appearance: none;
+  }
+  textarea.input {
+    min-height: 6rem;
+    resize: vertical;
+  }
+}
+
+@layer utilities {
+  .eyebrow {
+    font-family: var(--font-stat);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
+
+  .stat-figure {
+    font-family: var(--font-stat);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
