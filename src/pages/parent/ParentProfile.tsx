@@ -10,7 +10,7 @@ import { Select } from '../../components/ui/FormField'
 export default function ParentProfile() {
   const { t } = useTranslation()
   const { appUser } = useAuth()
-  const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserId', '==', appUser.uid)] : [])
+  const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserIds', 'array-contains', appUser.uid)] : [])
   const { data: teams } = useCollection<Team>('teams')
   const [playerId, setPlayerId] = useState('')
 

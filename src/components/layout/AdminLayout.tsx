@@ -1,6 +1,7 @@
-import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import SectionTabs from '../ui/SectionTabs'
+import DesktopSidebar from '../ui/DesktopSidebar'
+import OutletTransition from './OutletTransition'
 
 export default function AdminLayout() {
   const { t } = useTranslation()
@@ -17,12 +18,16 @@ export default function AdminLayout() {
     { to: '/admin/gallery', label: t('admin.galleryPage') },
     { to: '/admin/registrations', label: t('admin.registrationsPage') },
     { to: '/admin/messages', label: t('messaging.title') },
+    { to: '/admin/match-stats', label: t('admin.matchStatsPage.title') },
   ]
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 pb-28 md:px-8 lg:pb-10">
-      <SectionTabs tabs={TABS} />
-      <Outlet />
+    <div className="mx-auto max-w-7xl px-4 py-10 pb-28 md:px-8 lg:flex lg:gap-8 lg:pb-10">
+      <DesktopSidebar tabs={TABS} />
+      <div className="min-w-0 flex-1">
+        <SectionTabs tabs={TABS} />
+        <OutletTransition />
+      </div>
     </div>
   )
 }

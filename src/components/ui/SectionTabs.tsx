@@ -7,7 +7,7 @@ interface Tab {
 
 export default function SectionTabs({ tabs }: { tabs: Tab[] }) {
   return (
-    <div className="-mx-4 mb-6 overflow-x-auto px-4 md:-mx-8 md:px-8">
+    <div className="-mx-4 mb-6 overflow-x-auto px-4 md:-mx-8 md:px-8 lg:hidden">
       <nav className="flex w-max gap-1 border-b border-line-soft">
         {tabs.map((t) => (
           <NavLink

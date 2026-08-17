@@ -18,6 +18,10 @@ import NotFound from './pages/public/NotFound'
 
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import CoachLogin from './pages/auth/CoachLogin'
+import AdminLogin from './pages/auth/AdminLogin'
+import PlayerLogin from './pages/auth/PlayerLogin'
+import PlayerRegister from './pages/auth/PlayerRegister'
 
 // The dashboards (parent/coach/admin) plus their Firebase-heavy CRUD
 // screens are only needed once someone is signed in, so they're
@@ -38,6 +42,9 @@ const CoachDashboard = lazy(() => import('./pages/coach/CoachDashboard'))
 const CoachPlayers = lazy(() => import('./pages/coach/CoachPlayers'))
 const CoachAttendance = lazy(() => import('./pages/coach/CoachAttendance'))
 const CoachEvaluations = lazy(() => import('./pages/coach/CoachEvaluations'))
+const CoachTasks = lazy(() => import('./pages/coach/CoachTasks'))
+const CoachMatchStats = lazy(() => import('./pages/coach/CoachMatchStats'))
+const CoachGallery = lazy(() => import('./pages/coach/CoachGallery'))
 const CoachMessages = lazy(() => import('./pages/coach/CoachMessages'))
 
 const AdminLayout = lazy(() => import('./components/layout/AdminLayout'))
@@ -52,6 +59,16 @@ const AdminAnnouncements = lazy(() => import('./pages/admin/AdminAnnouncements')
 const AdminGallery = lazy(() => import('./pages/admin/AdminGallery'))
 const AdminRegistrations = lazy(() => import('./pages/admin/AdminRegistrations'))
 const AdminMessages = lazy(() => import('./pages/admin/AdminMessages'))
+const AdminMatchStats = lazy(() => import('./pages/admin/AdminMatchStats'))
+
+const PlayerLayout = lazy(() => import('./components/layout/PlayerLayout'))
+const PlayerDashboard = lazy(() => import('./pages/player/PlayerDashboard'))
+const PlayerAttendance = lazy(() => import('./pages/player/PlayerAttendance'))
+const PlayerPerformance = lazy(() => import('./pages/player/PlayerPerformance'))
+const PlayerProfile = lazy(() => import('./pages/player/PlayerProfile'))
+const PlayerCheckIn = lazy(() => import('./pages/player/PlayerCheckIn'))
+const PlayerTasks = lazy(() => import('./pages/player/PlayerTasks'))
+const PlayerJourney = lazy(() => import('./pages/player/PlayerJourney'))
 
 export default function App() {
   return (
@@ -71,6 +88,10 @@ export default function App() {
           {/* Auth */}
           <Route path="/login" element={<PublicLayout><Login /></PublicLayout>} />
           <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
+          <Route path="/coach-login" element={<PublicLayout><CoachLogin /></PublicLayout>} />
+          <Route path="/admin-login" element={<PublicLayout><AdminLogin /></PublicLayout>} />
+          <Route path="/player-login" element={<PublicLayout><PlayerLogin /></PublicLayout>} />
+          <Route path="/player-register" element={<PublicLayout><PlayerRegister /></PublicLayout>} />
 
           {/* Parent portal */}
           <Route
@@ -96,7 +117,7 @@ export default function App() {
           <Route
             path="/coach"
             element={
-              <ProtectedRoute allow={['coach']}>
+              <ProtectedRoute allow={['coach']} loginPath="/coach-login">
                 <Suspense fallback={<LoadingScreen />}>
                   <DashboardLayout><CoachLayout /></DashboardLayout>
                 </Suspense>
@@ -107,6 +128,9 @@ export default function App() {
             <Route path="players" element={<CoachPlayers />} />
             <Route path="attendance" element={<CoachAttendance />} />
             <Route path="evaluations" element={<CoachEvaluations />} />
+            <Route path="tasks" element={<CoachTasks />} />
+            <Route path="match-stats" element={<CoachMatchStats />} />
+            <Route path="gallery" element={<CoachGallery />} />
             <Route path="messages" element={<CoachMessages />} />
           </Route>
 
@@ -114,7 +138,7 @@ export default function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute allow={['admin', 'super_admin']}>
+              <ProtectedRoute allow={['admin', 'super_admin']} loginPath="/admin-login">
                 <Suspense fallback={<LoadingScreen />}>
                   <DashboardLayout><AdminLayout /></DashboardLayout>
                 </Suspense>
@@ -132,6 +156,27 @@ export default function App() {
             <Route path="gallery" element={<AdminGallery />} />
             <Route path="registrations" element={<AdminRegistrations />} />
             <Route path="messages" element={<AdminMessages />} />
+            <Route path="match-stats" element={<AdminMatchStats />} />
+          </Route>
+
+          {/* Player portal */}
+          <Route
+            path="/player"
+            element={
+              <ProtectedRoute allow={['player']} loginPath="/player-login">
+                <Suspense fallback={<LoadingScreen />}>
+                  <DashboardLayout><PlayerLayout /></DashboardLayout>
+                </Suspense>
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PlayerDashboard />} />
+            <Route path="attendance" element={<PlayerAttendance />} />
+            <Route path="performance" element={<PlayerPerformance />} />
+            <Route path="profile" element={<PlayerProfile />} />
+            <Route path="checkin" element={<PlayerCheckIn />} />
+            <Route path="tasks" element={<PlayerTasks />} />
+            <Route path="journey" element={<PlayerJourney />} />
           </Route>
 
           <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />

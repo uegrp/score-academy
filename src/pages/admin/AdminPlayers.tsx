@@ -8,6 +8,8 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import { Input, Select } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
+import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
+import FloatingActionButton from '../../components/ui/FloatingActionButton'
 
 type FormState = {
   fullName: string
@@ -22,7 +24,9 @@ type FormState = {
   medicalNotes: string
   emergencyContactName: string
   emergencyContactPhone: string
-  parentUserId: string
+  parentUserIdsText: string
+  playerUserId: string
+  jerseyNumber: string
 }
 
 const emptyForm: FormState = {
@@ -38,7 +42,9 @@ const emptyForm: FormState = {
   medicalNotes: '',
   emergencyContactName: '',
   emergencyContactPhone: '',
-  parentUserId: '',
+  parentUserIdsText: '',
+  playerUserId: '',
+  jerseyNumber: '',
 }
 
 export default function AdminPlayers() {
@@ -101,7 +107,9 @@ export default function AdminPlayers() {
       medicalNotes: p.medicalNotes ?? '',
       emergencyContactName: p.emergencyContact?.name ?? '',
       emergencyContactPhone: p.emergencyContact?.phone ?? '',
-      parentUserId: p.parentUserId ?? '',
+      parentUserIdsText: (p.parentUserIds ?? []).join(', '),
+      playerUserId: p.playerUserId ?? '',
+      jerseyNumber: p.jerseyNumber ? String(p.jerseyNumber) : '',
     })
     setStatus(null)
     setModalOpen(true)
@@ -127,7 +135,12 @@ export default function AdminPlayers() {
           name: form.emergencyContactName.trim(),
           phone: form.emergencyContactPhone.trim(),
         },
-        parentUserId: form.parentUserId.trim(),
+        parentUserIds: form.parentUserIdsText
+          .split(',')
+          .map((id) => id.trim())
+          .filter(Boolean),
+        playerUserId: form.playerUserId.trim() || undefined,
+        jerseyNumber: form.jerseyNumber.trim() ? Number(form.jerseyNumber.trim()) : undefined,
         joiningDate: editingId ? (players.find((p) => p.id === editingId)?.joiningDate ?? Date.now()) : Date.now(),
       }
 
@@ -170,10 +183,11 @@ export default function AdminPlayers() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl text-pitch">{t('admin.players')}</h1>
-        <Button size="sm" onClick={openAdd}>
+        <Button size="sm" onClick={openAdd} className="hidden lg:inline-flex">
           + {t('admin.addPlayer')}
         </Button>
       </div>
+      <FloatingActionButton onClick={openAdd} label={t('admin.addPlayer')} />
 
       <StatusBanner status={status} />
 
@@ -218,9 +232,9 @@ export default function AdminPlayers() {
             hint={players.length === 0 ? t('emptyStates.noPlayersHint') : undefined}
           />
         ) : (
-          <div className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
+          <StaggerContainer className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {filtered.map((p) => (
-              <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <StaggerItem key={p.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div>
                   <p className="font-medium text-pitch">{p.fullName}</p>
                   <p className="text-sm text-pitch/60">
@@ -247,9 +261,9 @@ export default function AdminPlayers() {
                     {t('common.delete')}
                   </Button>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </div>
 
@@ -345,9 +359,23 @@ export default function AdminPlayers() {
           </div>
           <Input
             label={t('admin.playersPage.parentUid')}
-            value={form.parentUserId}
-            onChange={(e) => setForm({ ...form, parentUserId: e.target.value })}
+            value={form.parentUserIdsText}
+            onChange={(e) => setForm({ ...form, parentUserIdsText: e.target.value })}
           />
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label={t('admin.playersPage.playerUid')}
+              value={form.playerUserId}
+              onChange={(e) => setForm({ ...form, playerUserId: e.target.value })}
+            />
+            <Input
+              label={t('admin.playersPage.jerseyNumber')}
+              type="number"
+              min={0}
+              value={form.jerseyNumber}
+              onChange={(e) => setForm({ ...form, jerseyNumber: e.target.value })}
+            />
+          </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
               {t('common.cancel')}

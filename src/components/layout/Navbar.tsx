@@ -8,6 +8,7 @@ import LanguageSwitcher from '../ui/LanguageSwitcher'
 
 const DASHBOARD_BY_ROLE: Record<string, string> = {
   parent: '/parent',
+  player: '/player',
   coach: '/coach',
   admin: '/admin',
   super_admin: '/admin',

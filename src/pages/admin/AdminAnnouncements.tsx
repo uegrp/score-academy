@@ -8,6 +8,8 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import { Input, Textarea, Select } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
+import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
+import FloatingActionButton from '../../components/ui/FloatingActionButton'
 
 type FormState = { title: string; body: string; category: Announcement['category']; published: boolean }
 const emptyForm: FormState = { title: '', body: '', category: 'news', published: true }
@@ -99,10 +101,11 @@ export default function AdminAnnouncements() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl text-pitch">{t('admin.newsPage')}</h1>
-        <Button size="sm" onClick={openAdd}>
+        <Button size="sm" onClick={openAdd} className="hidden lg:inline-flex">
           + {t('admin.newAnnouncement')}
         </Button>
       </div>
+      <FloatingActionButton onClick={openAdd} label={t('admin.newAnnouncement')} />
 
       <StatusBanner status={status} />
 
@@ -112,9 +115,9 @@ export default function AdminAnnouncements() {
         ) : sorted.length === 0 ? (
           <EmptyState title={t('emptyStates.noAnnouncements')} hint={t('emptyStates.noAnnouncementsHint')} />
         ) : (
-          <div className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
+          <StaggerContainer className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {sorted.map((a) => (
-              <div key={a.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <StaggerItem key={a.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div>
                   <p className="font-medium text-pitch">{a.title}</p>
                   <p className="text-sm text-pitch/60">
@@ -135,9 +138,9 @@ export default function AdminAnnouncements() {
                     {t('common.delete')}
                   </Button>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </div>
 

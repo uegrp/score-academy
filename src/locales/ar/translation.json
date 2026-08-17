@@ -188,6 +188,10 @@
   "auth": {
     "loginEyebrow": "أهلًا بعودتك",
     "loginTitle": "تسجيل الدخول",
+    "coachLoginEyebrow": "دخول المدربين",
+    "coachLoginTitle": "تسجيل دخول المدرب",
+    "adminLoginEyebrow": "دخول الإدارة",
+    "adminLoginTitle": "تسجيل دخول الأدمن",
     "notConfigured": "لسه Firebase مش مظبوط — أضف بيانات مشروعك في .env.local لتفعيل تسجيل الدخول.",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
@@ -251,7 +255,11 @@
       "invalidCredential": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
       "userNotFound": "لا يوجد حساب بهذا البريد الإلكتروني.",
       "tooManyRequests": "محاولات كثيرة جدًا. حاول مرة أخرى بعد قليل.",
-      "loginGeneric": "فشل تسجيل الدخول. حاول مرة أخرى."
+      "loginGeneric": "فشل تسجيل الدخول. حاول مرة أخرى.",
+      "wrongRoleParent": "شاشة الدخول دي لأولياء الأمور بس. المدربون والإدارة عندهم صفحات دخول خاصة بيهم.",
+      "wrongRoleCoach": "شاشة الدخول دي للمدربين بس. نوع الحساب ده مش مناسب للصفحة دي.",
+      "wrongRoleAdmin": "شاشة الدخول دي لإدارة الأكاديمية بس. نوع الحساب ده مش مناسب للصفحة دي.",
+      "wrongRolePlayer": "شاشة الدخول دي للاعبين بس. نوع الحساب ده مش مناسب للصفحة دي."
     }
   },
   "parent": {
@@ -327,6 +335,19 @@
     "notesPlaceholder": "ملاحظات، نقاط للتركيز عليها في الجلسة القادمة…",
     "saveEvaluation": "حفظ التقييم",
     "evaluationSaved": "تم حفظ التقييم.",
+    "tasksPage": {
+      "title": "المهام اليومية",
+      "taskTitle": "المهمة",
+      "taskTitlePlaceholder": "مثال: 20 دقيقة تحكم بالكرة",
+      "date": "التاريخ",
+      "assign": "تعيين المهمة",
+      "assigned": "تم تعيين المهمة.",
+      "assignedTasks": "المهام المعيّنة",
+      "noTasksYet": "لا توجد مهام معيّنة بعد",
+      "deleteConfirm": "حذف هذه المهمة؟",
+      "done": "منجزة",
+      "pending": "قيد الإنجاز"
+    },
     "skillLevels": {
       "beginner": "مبتدئ",
       "developing": "قيد التطور",
@@ -340,6 +361,7 @@
       "ballControl": "التحكم بالكرة",
       "shooting": "التسديد",
       "firstTouch": "أول لمسة",
+      "defending": "الدفاع",
       "speed": "السرعة",
       "agility": "خفة الحركة",
       "stamina": "التحمل",
@@ -412,7 +434,9 @@
       "previousClub": "النادي السابق (اختياري)",
       "emergencyContactName": "اسم جهة اتصال الطوارئ",
       "emergencyContactPhone": "رقم جهة اتصال الطوارئ",
-      "parentUid": "معرّف حساب ولي الأمر (اختياري — لربط اللاعب بحساب ولي الأمر)",
+      "parentUid": "معرّف حساب/حسابات ولي الأمر — افصل بينهم بفاصلة لو أكتر من واحد (اختياري)",
+      "playerUid": "معرّف حساب اللاعب نفسه (اختياري — لربط اللاعب بحسابه الشخصي)",
+      "jerseyNumber": "رقم القميص (اختياري)",
       "levelBeginner": "مبتدئ",
       "levelDeveloping": "قيد التطور",
       "levelIntermediate": "متوسط",
@@ -532,7 +556,8 @@
       "catTraining": "تدريب",
       "catMatch": "مباراة",
       "catTeam": "فريق",
-      "catEvent": "فعالية"
+      "catEvent": "فعالية",
+      "tagPlayers": "وسم اللاعبين في هذه الصورة (اختياري — اللاعبون المُوسومون هيشوفوها في رحلتهم الشخصية)"
     },
     "registrationsPageForm": {
       "approved": "تمت الموافقة على {{name}} وإضافته كلاعب نشط.",
@@ -543,12 +568,36 @@
       "dob": "الميلاد",
       "parentLabel": "ولي الأمر",
       "noDecisions": "لا توجد قرارات حتى الآن."
+    },
+    "matchStatsPage": {
+      "title": "إحصائيات المباريات",
+      "selectMatch": "اختر المباراة",
+      "saved": "تم حفظ الإحصائيات.",
+      "minutesPlayed": "الدقائق الملعوبة",
+      "goals": "الأهداف",
+      "assists": "التمريرات الحاسمة",
+      "shots": "التسديدات",
+      "shotsOnTarget": "التسديدات على المرمى",
+      "passes": "التمريرات",
+      "successfulPasses": "التمريرات الناجحة",
+      "keyPasses": "التمريرات المفتاحية",
+      "tackles": "التدخلات",
+      "interceptions": "الاعتراضات",
+      "ballRecoveries": "استعادة الكرة",
+      "clearances": "التشتيت",
+      "blocks": "التصديات"
     }
   },
   "notFound": {
     "eyebrow": "٤٠٤",
     "title": "الصفحة دي تسلل.",
     "body": "الصفحة اللي بتدور عليها مش موجودة."
+  },
+  "appHeader": {
+    "goodMorning": "صباح الخير{{name}}",
+    "goodAfternoon": "مساء النور{{name}}",
+    "goodEvening": "مساء الخير{{name}}",
+    "subtitle": "أكاديمية SCORE لكرة القدم"
   },
   "messaging": {
     "title": "الرسائل",
@@ -560,6 +609,49 @@
     "noConversationsHint": "رسائل أولياء الأمور هتظهر هنا.",
     "noMessagesYet": "لا توجد رسائل بعد",
     "backToInbox": "الرجوع لصندوق الوارد"
+  },
+  "player": {
+    "dashboardEyebrow": "لوحة تحكم اللاعب",
+    "welcome": "أهلًا {{name}}.",
+    "attendanceRate": "نسبة الحضور",
+    "notLinkedYet": "حسابك لسه مش مرتبط بملف لاعب",
+    "notLinkedYetHint": "اطلب من الأكاديمية تربط حسابك من لوحة الإدارة — ده بياخد لحظات بمجرد ما تسجل.",
+    "noEvaluationYet": "لا يوجد تقييم بعد",
+    "noEvaluationYetHint": "بطاقتك هتظهر هنا بمجرد ما مدربك يرسل أول تقييم ليك.",
+    "loginEyebrow": "دخول اللاعبين",
+    "loginTitle": "تسجيل دخول اللاعب",
+    "registerEyebrow": "انضم لـ SCORE",
+    "registerTitle": "أنشئ حساب اللاعب بتاعك",
+    "registerSubtitle": "ده حسابك الشخصي في كرة القدم — منفصل عن حساب ولي أمرك. الإدارة هتربطه بملفك كلاعب.",
+    "createAccount": "إنشاء الحساب",
+    "registerSuccessEyebrow": "تم إنشاء الحساب",
+    "registerSuccessTitle": "خلاص، دخلت.",
+    "registerSuccessBody": "أديّ بريدك الإلكتروني للأكاديمية عشان يربطوا الحساب ده بملفك كلاعب — بعدها بطاقتك وإحصائياتك وحضورك هيظهروا هنا.",
+    "tasksPage": {
+      "title": "المهام",
+      "today": "مهام اليوم",
+      "upcoming": "القادمة",
+      "past": "السابقة",
+      "noneToday": "لا توجد مهام النهاردة — استمتع بباقي يومك!",
+      "noTasksAtAll": "لا توجد مهام معيّنة بعد",
+      "viewAll": "عرض الكل"
+    },
+    "statsPage": {
+      "title": "إحصائياتي",
+      "matchesPlayed": "المباريات",
+      "trainingSessions": "الجلسات"
+    },
+    "journeyPage": {
+      "title": "رحلتي في كرة القدم",
+      "subtitle": "صور من جلسات تدريبك، مبارياتك، وفعاليات الأكاديمية.",
+      "empty": "لا توجد صور بعد",
+      "emptyHint": "مدربك هيوسمك في صور التدريب والمباريات — وهتظهر هنا."
+    },
+    "progressPage": {
+      "title": "التقدم",
+      "overallTrend": "التقييم العام عبر الوقت",
+      "attributeTrend": "تطور المهارات"
+    }
   },
   "footer": {
     "tagline": "تدريب احترافي لكرة القدم مصمم لتطوير المهارة والانضباط وروح الفريق لدى كل لاعب.",

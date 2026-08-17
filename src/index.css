@@ -1,19 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  /* ---- SCORE brand palette ---- */
-  --color-pitch: #0d1210;         /* near-black, primary background */
-  --color-pitch-soft: #141b18;     /* elevated surface on pitch */
-  --color-bone: #f3f5ef;           /* primary light background / text-on-dark */
-  --color-bone-dim: #c9cfc6;       /* secondary text on dark */
-  --color-grass: #1e6b3c;          /* primary brand green */
-  --color-grass-bright: #2f9e57;   /* interactive green (hover/active) */
-  --color-gold: #c6a15b;           /* elite/featured accent, used sparingly */
-  --color-gold-bright: #dcb96f;
-  --color-line: #8a9089;           /* pitch-line gray, dividers, muted text */
-  --color-line-soft: #2a322d;      /* hairline on dark surfaces */
-  --color-danger: #c85c4c;
-  --color-warn: #cf9a3d;
+  /* ---- SCORE brand palette — sampled directly from the real logo file
+     (navy #181C24, teal #017976, red #F02531), replaced in place of the
+     old muted forest-green/tan palette. Token *names* are unchanged
+     (pitch/grass/gold/bone/line/danger/warn) so every existing component
+     across the app picks up the new vibrant colors automatically —
+     nothing needed to be touched file-by-file. ---- */
+  --color-pitch: #181c24; /* brand navy — dark surfaces/text, was near-black #0d1210 */
+  --color-pitch-soft: #232833; /* elevated dark surface */
+  --color-bone: #f8faf9; /* bright surface (kept light, slightly brighter) */
+  --color-bone-dim: #aab4b1; /* muted text on dark surfaces */
+  --color-grass: #017976; /* brand teal (from logo) — was muddy green #1e6b3c */
+  --color-grass-bright: #00b8ad; /* vivid interactive teal */
+  --color-gold: #f02531; /* brand red (from logo) — repurposed as the featured/accent color, was tan #c6a15b */
+  --color-gold-bright: #ff4d5a; /* vivid glow red, for FIFA card / featured highlights */
+  --color-line: #94a3a0; /* dividers / muted text on light surfaces */
+  --color-line-soft: #2a3540; /* hairline on dark surfaces */
+  --color-danger: #dc2626; /* true error red — intentionally distinct from brand accent red so destructive actions never look like a primary CTA */
+  --color-warn: #f59e0b; /* vivid amber */
 
   /* ---- Type ---- */
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -97,6 +102,45 @@
 
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Subtle animated sheen sweeping across the FIFA card — a lightweight
+     CSS-only effect (no JS animation loop) so it stays smooth on
+     mid-range phones. Disabled entirely under prefers-reduced-motion via
+     the global rule above. */
+  .card-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .card-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 20%,
+      color-mix(in srgb, white 18%, transparent) 35%,
+      transparent 50%
+    );
+    background-size: 200% 100%;
+    background-position: 150% 0;
+    animation: card-shine-sweep 5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes card-shine-sweep {
+    0%, 60% {
+      background-position: 150% 0;
+    }
+    100% {
+      background-position: -50% 0;
+    }
+  }
+
+  .glow-red {
+    box-shadow: 0 0 32px -8px color-mix(in srgb, var(--color-gold) 55%, transparent);
+  }
+  .glow-teal {
+    box-shadow: 0 0 32px -8px color-mix(in srgb, var(--color-grass-bright) 50%, transparent);
   }
 }
 

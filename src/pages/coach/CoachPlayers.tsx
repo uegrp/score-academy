@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
+import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
 import type { Player, Team } from '../../types'
 import { where } from '../../lib/collections'
 
@@ -40,9 +41,9 @@ export default function CoachPlayers() {
         ) : players.length === 0 ? (
           <EmptyState title={t('emptyStates.noPlayersInTeam')} />
         ) : (
-          <div className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
+          <StaggerContainer className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {players.map((p) => (
-              <div key={p.id} className="flex items-center justify-between p-4">
+              <StaggerItem key={p.id} className="flex items-center justify-between p-4">
                 <div>
                   <p className="font-medium text-pitch">{p.fullName}</p>
                   <p className="text-sm text-pitch/60">
@@ -56,9 +57,9 @@ export default function CoachPlayers() {
                 >
                   {statusLabel[p.status]}
                 </span>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </div>
     </div>

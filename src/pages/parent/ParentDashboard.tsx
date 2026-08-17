@@ -12,7 +12,7 @@ export default function ParentDashboard() {
 
   const { data: players, loading: playersLoading } = useCollection<Player>(
     'players',
-    appUser ? [where('parentUserId', '==', appUser.uid)] : []
+    appUser ? [where('parentUserIds', 'array-contains', appUser.uid)] : []
   )
   const { data: announcements } = useCollection<Announcement>('announcements', [where('published', '==', true)])
   const { data: sessions } = useCollection<TrainingSession>('trainingSessions')

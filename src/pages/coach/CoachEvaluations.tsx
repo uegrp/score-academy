@@ -9,7 +9,7 @@ import Button from '../../components/ui/Button'
 import { Select, Textarea } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
 
-const TECHNICAL = ['passing', 'dribbling', 'ballControl', 'shooting', 'firstTouch'] as const
+const TECHNICAL = ['passing', 'dribbling', 'ballControl', 'shooting', 'firstTouch', 'defending'] as const
 const PHYSICAL = ['speed', 'agility', 'stamina', 'strength'] as const
 const MENTAL = ['discipline', 'confidence', 'teamwork', 'decisionMaking'] as const
 
@@ -62,6 +62,7 @@ export default function CoachEvaluations() {
           ballControl: ratings.ballControl,
           shooting: ratings.shooting,
           firstTouch: ratings.firstTouch,
+          defending: ratings.defending,
         },
         physical: {
           speed: ratings.speed,

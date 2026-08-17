@@ -27,14 +27,28 @@ service cloud.firestore {
       return role() == 'parent';
     }
 
+    function isPlayer() {
+      return role() == 'player';
+    }
+
     // A coach may only touch teams/players they are assigned to.
     function isAssignedCoachOfTeam(teamId) {
       return isCoach() && teamId in userDoc().data.linkedTeamIds;
     }
 
-    // A parent may only read/write their own player records.
-    function isOwningParent(parentUserId) {
-      return isParent() && request.auth.uid == parentUserId;
+    // A parent may only read/write player records they supervise. A player
+    // may be supervised by more than one parent account, hence the array.
+    function isOwningParent(parentUserIds) {
+      return isParent() && request.auth.uid in parentUserIds;
+    }
+
+    // A player may only read their own linked record.
+    function isOwningPlayer(playerUserId) {
+      return isPlayer() && request.auth.uid == playerUserId;
+    }
+
+    function playerData(playerId) {
+      return get(/databases/$(database)/documents/players/$(playerId)).data;
     }
 
     // ---- users ----
@@ -50,9 +64,13 @@ service cloud.firestore {
     // ---- players ----
     match /players/{playerId} {
       allow read: if isAdmin() ||
-        isOwningParent(resource.data.parentUserId) ||
+        isOwningParent(resource.data.parentUserIds) ||
+        isOwningPlayer(resource.data.playerUserId) ||
         isAssignedCoachOfTeam(resource.data.teamId);
       allow create: if isAdmin();
+      // A player may update only their own non-official fields (their
+      // account link and basic profile bits) — never their own official
+      // team/level/status, which stays admin/coach-only.
       allow update: if isAdmin() || isAssignedCoachOfTeam(resource.data.teamId);
       allow delete: if isAdmin();
     }
@@ -85,14 +103,15 @@ service cloud.firestore {
     // ---- attendance ----
     match /attendance/{recordId} {
       allow read: if isAdmin() || isCoach() ||
-        (isParent() && get(/databases/$(database)/documents/players/$(resource.data.playerId)).data.parentUserId == request.auth.uid);
-      // Parents may self-check-in via the QR scanner (ParentCheckIn.tsx) —
-      // but only as "present", and only for a player they actually own.
+        (isParent() && request.auth.uid in playerData(resource.data.playerId).parentUserIds) ||
+        (isPlayer() && request.auth.uid == playerData(resource.data.playerId).playerUserId);
+      // Parents AND players may self-check-in via the QR scanner — but only
+      // as "present", and only for a player they actually own/are.
       // Coaches/admins can still mark any status for any player on their teams.
       allow create: if isAdmin() || isCoach() ||
-        (isParent() &&
-          request.resource.data.status == 'present' &&
-          get(/databases/$(database)/documents/players/$(request.resource.data.playerId)).data.parentUserId == request.auth.uid);
+        (request.resource.data.status == 'present' &&
+          ((isParent() && request.auth.uid in playerData(request.resource.data.playerId).parentUserIds) ||
+           (isPlayer() && request.auth.uid == playerData(request.resource.data.playerId).playerUserId)));
       allow update: if isAdmin() || isCoach();
       allow delete: if isAdmin();
     }
@@ -101,7 +120,8 @@ service cloud.firestore {
     match /performanceEvaluations/{evalId} {
       allow read: if isAdmin() ||
         (isCoach() && resource.data.coachId == request.auth.uid) ||
-        (isParent() && get(/databases/$(database)/documents/players/$(resource.data.playerId)).data.parentUserId == request.auth.uid);
+        (isParent() && request.auth.uid in playerData(resource.data.playerId).parentUserIds) ||
+        (isPlayer() && request.auth.uid == playerData(resource.data.playerId).playerUserId);
       allow create, update: if isAdmin() || isCoach();
       allow delete: if isAdmin();
     }
@@ -121,7 +141,32 @@ service cloud.firestore {
     // ---- gallery ----
     match /gallery/{itemId} {
       allow read: if true; // public
-      allow write: if isAdmin();
+      allow write: if isAdmin() || isCoach();
+    }
+
+    // ---- dailyTasks ----
+    // Coaches assign; a player may only flip `completed` on their own
+    // task and can never change its title, date, or who assigned it.
+    match /dailyTasks/{taskId} {
+      allow read: if isAdmin() || isCoach() ||
+        (isParent() && request.auth.uid in playerData(resource.data.playerId).parentUserIds) ||
+        (isPlayer() && request.auth.uid == playerData(resource.data.playerId).playerUserId);
+      allow create: if isAdmin() || isCoach();
+      allow update: if isAdmin() || isCoach() ||
+        (isPlayer() &&
+          request.auth.uid == playerData(resource.data.playerId).playerUserId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completed']));
+      allow delete: if isAdmin() || isCoach();
+    }
+
+    // ---- matchPlayerStats ----
+    // Coaches/admins enter these after a match; players/parents can only
+    // ever read their own player's numbers, never edit them.
+    match /matchPlayerStats/{statId} {
+      allow read: if isAdmin() || isCoach() ||
+        (isParent() && request.auth.uid in playerData(resource.data.playerId).parentUserIds) ||
+        (isPlayer() && request.auth.uid == playerData(resource.data.playerId).playerUserId);
+      allow write: if isAdmin() || isCoach();
     }
 
     // ---- registrations ----

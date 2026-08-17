@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
+import StatCard from '../../components/ui/StatCard'
+import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
 import type { Team, Player } from '../../types'
 import { where } from '../../lib/collections'
 
@@ -29,9 +31,9 @@ export default function CoachDashboard() {
       </h1>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        <StatCard label={t('coach.assignedTeams')} value={teams.length} />
-        <StatCard label={t('coach.players')} value={players.length} />
-        <StatCard label={t('coach.sessionsToday')} value={0} />
+        <StatCard label={t('coach.assignedTeams')} value={teams.length} size="lg" />
+        <StatCard label={t('coach.players')} value={players.length} size="lg" />
+        <StatCard label={t('coach.sessionsToday')} value={0} size="lg" />
       </div>
 
       <section className="mt-10">
@@ -41,27 +43,18 @@ export default function CoachDashboard() {
         ) : teams.length === 0 ? (
           <EmptyState title={t('emptyStates.noTeamsAssignedYet')} hint={t('emptyStates.noTeamsAssignedHint')} />
         ) : (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <StaggerContainer className="mt-4 grid gap-4 sm:grid-cols-2">
             {teams.map((team) => (
-              <div key={team.id} className="rounded-card border border-line-soft bg-white p-5">
+              <StaggerItem key={team.id} className="rounded-card border border-line-soft bg-white p-5 transition-shadow hover:shadow-lg">
                 <p className="text-lg font-semibold text-pitch">{team.name}</p>
                 <p className="text-sm text-pitch/60">
                   {team.ageGroup} · {team.playerIds?.length ?? 0} {t('teamsPage.players')}
                 </p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </section>
-    </div>
-  )
-}
-
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-card border border-line-soft bg-white p-5">
-      <p className="stat-figure text-3xl text-pitch">{value}</p>
-      <p className="mt-1 text-xs uppercase tracking-wide text-pitch/60">{label}</p>
     </div>
   )
 }

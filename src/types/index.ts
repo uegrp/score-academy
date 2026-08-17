@@ -1,7 +1,7 @@
 // Core domain types for the SCORE Football Academy platform.
 // These mirror the Firestore collections defined in src/lib/collections.ts
 
-export type UserRole = 'super_admin' | 'admin' | 'coach' | 'parent'
+export type UserRole = 'super_admin' | 'admin' | 'coach' | 'parent' | 'player'
 
 export interface AppUser {
   uid: string
@@ -10,7 +10,7 @@ export interface AppUser {
   role: UserRole
   phone?: string
   createdAt: number
-  linkedPlayerIds?: string[] // for parent role
+  linkedPlayerIds?: string[] // for parent role — every child this parent supervises
   linkedTeamIds?: string[] // for coach role
 }
 
@@ -27,6 +27,7 @@ export interface PerformanceEvaluation {
     ballControl: SkillLevel
     shooting: SkillLevel
     firstTouch: SkillLevel
+    defending: SkillLevel
   }
   physical: {
     speed: SkillLevel
@@ -50,12 +51,20 @@ export interface Player {
   gender: 'male' | 'female'
   nationality: string
   preferredPosition: string
+  preferredFoot?: 'left' | 'right' | 'both'
+  jerseyNumber?: number
   currentLevel: string
   photoUrl?: string
   teamId?: string
   joiningDate: number
   status: 'pending' | 'active' | 'archived'
-  parentUserId: string
+  // A player may be supervised by more than one parent/guardian account.
+  parentUserIds: string[]
+  // The player's own login (see the "player" role) — optional because a
+  // player can exist and be supervised by a parent before they've signed
+  // up for their own account; an admin links the two via UID afterward,
+  // the same pattern already used to link a coach's account to a Coach doc.
+  playerUserId?: string
   previousClub?: string
   experience?: string
   medicalNotes?: string
@@ -112,6 +121,8 @@ export interface AttendanceRecord {
   playerId: string
   status: AttendanceStatus
   markedAt: number
+  checkInTime?: number
+  checkOutTime?: number
 }
 
 export interface Match {
@@ -144,6 +155,10 @@ export interface GalleryItem {
   caption?: string
   category: 'training' | 'match' | 'team' | 'event'
   uploadedAt: number
+  // Players tagged in this photo, for the personal "My Football Journey"
+  // gallery. Omitted/empty means it's a general academy photo shown only
+  // on the public gallery, never surfaced in any player's personal view.
+  playerIds?: string[]
 }
 
 export interface Registration {
@@ -187,5 +202,41 @@ export interface ChatMessage {
   senderName: string
   text: string
   sentAt: number
+}
+
+// ---- Daily Tasks ----
+// Assigned by a coach to one of their players; the player can only ever
+// toggle `completed` on their own task, never edit its content — enforced
+// in firestore.rules, not just in the UI.
+export interface DailyTask {
+  id: string
+  playerId: string
+  title: string
+  date: number // local-midnight timestamp of the day this task is assigned for
+  completed: boolean
+  assignedBy: string // coachId
+  createdAt: number
+}
+
+// ---- Match player statistics ----
+// One document per (match, player) pair. Coaches/admins enter these after
+// a match; players and their parents can only ever read them.
+export interface MatchPlayerStat {
+  id: string
+  matchId: string
+  playerId: string
+  goals: number
+  assists: number
+  shots: number
+  shotsOnTarget: number
+  passes: number
+  successfulPasses: number
+  keyPasses: number
+  tackles: number
+  interceptions: number
+  ballRecoveries: number
+  clearances: number
+  blocks: number
+  minutesPlayed: number
 }
 

@@ -8,6 +8,8 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import { Input, Select } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
+import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
+import FloatingActionButton from '../../components/ui/FloatingActionButton'
 
 type FormState = { name: string; ageGroup: string; coachId: string }
 const emptyForm: FormState = { name: '', ageGroup: '', coachId: '' }
@@ -81,10 +83,11 @@ export default function AdminTeams() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl text-pitch">{t('admin.teamsPage')}</h1>
-        <Button size="sm" onClick={openAdd}>
+        <Button size="sm" onClick={openAdd} className="hidden lg:inline-flex">
           + {t('admin.createTeam')}
         </Button>
       </div>
+      <FloatingActionButton onClick={openAdd} label={t('admin.createTeam')} />
 
       <StatusBanner status={status} />
 
@@ -94,9 +97,9 @@ export default function AdminTeams() {
         ) : teams.length === 0 ? (
           <EmptyState title={t('emptyStates.noTeams')} hint={t('emptyStates.noTeamsHint')} />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <StaggerContainer className="grid gap-4 sm:grid-cols-2">
             {teams.map((tm) => (
-              <div key={tm.id} className="rounded-card border border-line-soft bg-white p-5">
+              <StaggerItem key={tm.id} className="rounded-card border border-line-soft bg-white p-5 transition-shadow hover:shadow-lg">
                 <p className="text-lg font-semibold text-pitch">{tm.name}</p>
                 <p className="mt-1 text-sm text-pitch/60">
                   {tm.ageGroup} · {t('admin.teamsPageForm.coachLabel')}: {coachName(tm.coachId)} · {playerCount(tm.id)}{' '}
@@ -110,9 +113,9 @@ export default function AdminTeams() {
                     {t('common.delete')}
                   </Button>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </div>
 

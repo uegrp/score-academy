@@ -7,12 +7,13 @@ import type { AttendanceRecord, Player, TrainingSession } from '../../types'
 import { where } from '../../lib/collections'
 import EmptyState from '../../components/ui/EmptyState'
 import Button from '../../components/ui/Button'
+import StatCard from '../../components/ui/StatCard'
 import { Select } from '../../components/ui/FormField'
 
 export default function ParentAttendance() {
   const { t } = useTranslation()
   const { appUser } = useAuth()
-  const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserId', '==', appUser.uid)] : [])
+  const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserIds', 'array-contains', appUser.uid)] : [])
   const [playerId, setPlayerId] = useState('')
 
   const activePlayer = players.find((p) => p.id === playerId) ?? players[0]
@@ -81,7 +82,7 @@ export default function ParentAttendance() {
           ) : (
             <>
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <StatCard label={t('parent.attendanceRate')} value={`${percentage}%`} />
+                <StatCard label={t('parent.attendanceRate')} value={percentage} suffix="%" />
                 <StatCard label={t('parent.totalSessions')} value={total} />
                 <StatCard label={t('parent.present')} value={present} />
                 <StatCard label={t('parent.absent')} value={absent} />
@@ -107,15 +108,6 @@ export default function ParentAttendance() {
           )}
         </>
       )}
-    </div>
-  )
-}
-
-function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="rounded-card border border-line-soft bg-white p-4">
-      <p className="stat-figure text-2xl text-pitch">{value}</p>
-      <p className="mt-1 text-xs uppercase tracking-wide text-pitch/60">{label}</p>
     </div>
   )
 }

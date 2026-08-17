@@ -11,7 +11,7 @@ import PlayerAttributeCard from '../../components/cards/PlayerAttributeCard'
 export default function ParentPerformance() {
   const { t } = useTranslation()
   const { appUser } = useAuth()
-  const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserId', '==', appUser.uid)] : [])
+  const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserIds', 'array-contains', appUser.uid)] : [])
   const [playerId, setPlayerId] = useState('')
 
   const activePlayer = players.find((p) => p.id === playerId) ?? players[0]

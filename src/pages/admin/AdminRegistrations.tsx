@@ -6,6 +6,7 @@ import type { Registration, Player } from '../../types'
 import EmptyState from '../../components/ui/EmptyState'
 import Button from '../../components/ui/Button'
 import StatusBanner from '../../components/ui/StatusBanner'
+import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
 
 export default function AdminRegistrations() {
   const { t } = useTranslation()
@@ -35,7 +36,7 @@ export default function AdminRegistrations() {
         preferredPosition: r.player.preferredPosition,
         currentLevel: r.player.currentLevel,
         status: 'active',
-        parentUserId: '', // Link once the parent creates/confirms their login account.
+        parentUserIds: [], // Link once the parent creates/confirms their login account.
         previousClub: r.previousClub,
         experience: r.experience,
         medicalNotes: r.medicalNotes,
@@ -83,9 +84,9 @@ export default function AdminRegistrations() {
             <EmptyState title={t('emptyStates.noRegistrations')} hint={t('emptyStates.noRegistrationsHint')} />
           </div>
         ) : (
-          <div className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
+          <StaggerContainer className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {pending.map((r) => (
-              <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <StaggerItem key={r.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div>
                   <p className="font-medium text-pitch">{r.player.fullName}</p>
                   <p className="text-sm text-pitch/60">
@@ -104,9 +105,9 @@ export default function AdminRegistrations() {
                     {t('admin.reject')}
                   </Button>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </section>
 
@@ -115,9 +116,9 @@ export default function AdminRegistrations() {
         {decided.length === 0 ? (
           <p className="mt-3 text-sm text-pitch/50">{t('admin.registrationsPageForm.noDecisions')}</p>
         ) : (
-          <div className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
+          <StaggerContainer className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {decided.map((r) => (
-              <div key={r.id} className="flex items-center justify-between p-4">
+              <StaggerItem key={r.id} className="flex items-center justify-between p-4">
                 <p className="font-medium text-pitch">{r.player.fullName}</p>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -126,9 +127,9 @@ export default function AdminRegistrations() {
                 >
                   {statusLabel[r.status]}
                 </span>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </section>
     </div>

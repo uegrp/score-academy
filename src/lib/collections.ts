@@ -28,6 +28,8 @@ export const COLLECTIONS = {
   announcements: 'announcements',
   gallery: 'gallery',
   registrations: 'registrations',
+  dailyTasks: 'dailyTasks',
+  matchPlayerStats: 'matchPlayerStats',
 } as const
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS]

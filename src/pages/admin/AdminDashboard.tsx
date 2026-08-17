@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
+import StatCard from '../../components/ui/StatCard'
 import type { Player, Coach, Team, Match, Registration } from '../../types'
 import { where } from '../../lib/collections'
 
@@ -20,12 +21,12 @@ export default function AdminDashboard() {
       <h1 className="mt-2 text-4xl text-pitch">{t('admin.overview')}</h1>
 
       <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label={t('admin.totalPlayers')} value={players.length} />
-        <StatCard label={t('admin.activePlayers')} value={activePlayers.length} />
-        <StatCard label={t('admin.coaches')} value={coaches.length} />
-        <StatCard label={t('admin.teams')} value={teams.length} />
-        <StatCard label={t('admin.upcomingMatches')} value={matches.filter((m) => m.date > Date.now()).length} />
-        <StatCard label={t('admin.pendingRegistrations')} value={pending.length} highlight={pending.length > 0} />
+        <StatCard label={t('admin.totalPlayers')} value={players.length} size="lg" />
+        <StatCard label={t('admin.activePlayers')} value={activePlayers.length} size="lg" />
+        <StatCard label={t('admin.coaches')} value={coaches.length} size="lg" />
+        <StatCard label={t('admin.teams')} value={teams.length} size="lg" />
+        <StatCard label={t('admin.upcomingMatches')} value={matches.filter((m) => m.date > Date.now()).length} size="lg" />
+        <StatCard label={t('admin.pendingRegistrations')} value={pending.length} highlight={pending.length > 0} size="lg" />
       </div>
 
       <section className="mt-10">
@@ -48,15 +49,6 @@ export default function AdminDashboard() {
           </div>
         )}
       </section>
-    </div>
-  )
-}
-
-function StatCard({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
-  return (
-    <div className={`rounded-card border p-5 ${highlight ? 'border-warn/50 bg-warn/5' : 'border-line-soft bg-white'}`}>
-      <p className="stat-figure text-3xl text-pitch">{value}</p>
-      <p className="mt-1 text-xs uppercase tracking-wide text-pitch/60">{label}</p>
     </div>
   )
 }

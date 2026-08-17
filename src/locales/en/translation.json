@@ -188,6 +188,10 @@
   "auth": {
     "loginEyebrow": "Welcome back",
     "loginTitle": "Sign in",
+    "coachLoginEyebrow": "Coach access",
+    "coachLoginTitle": "Coach sign in",
+    "adminLoginEyebrow": "Admin access",
+    "adminLoginTitle": "Admin sign in",
     "notConfigured": "Firebase isn't configured yet — add your project keys to .env.local to enable sign in.",
     "email": "Email",
     "password": "Password",
@@ -251,7 +255,11 @@
       "invalidCredential": "Incorrect email or password.",
       "userNotFound": "No account found with that email.",
       "tooManyRequests": "Too many attempts. Try again shortly.",
-      "loginGeneric": "Sign in failed. Please try again."
+      "loginGeneric": "Sign in failed. Please try again.",
+      "wrongRoleParent": "This login is for parents. Coaches and admins have their own sign-in pages.",
+      "wrongRoleCoach": "This login is for coaches only. Wrong account type for this page.",
+      "wrongRoleAdmin": "This login is for academy admins only. Wrong account type for this page.",
+      "wrongRolePlayer": "This login is for players only. Wrong account type for this page."
     }
   },
   "parent": {
@@ -327,6 +335,19 @@
     "notesPlaceholder": "Observations, focus areas for next session…",
     "saveEvaluation": "Save evaluation",
     "evaluationSaved": "Evaluation saved.",
+    "tasksPage": {
+      "title": "Daily Tasks",
+      "taskTitle": "Task",
+      "taskTitlePlaceholder": "e.g. 20 minutes ball control",
+      "date": "Date",
+      "assign": "Assign task",
+      "assigned": "Task assigned.",
+      "assignedTasks": "Assigned tasks",
+      "noTasksYet": "No tasks assigned yet",
+      "deleteConfirm": "Delete this task?",
+      "done": "Done",
+      "pending": "Pending"
+    },
     "skillLevels": {
       "beginner": "Beginner",
       "developing": "Developing",
@@ -340,6 +361,7 @@
       "ballControl": "Ball Control",
       "shooting": "Shooting",
       "firstTouch": "First Touch",
+      "defending": "Defending",
       "speed": "Speed",
       "agility": "Agility",
       "stamina": "Stamina",
@@ -412,7 +434,9 @@
       "previousClub": "Previous club (optional)",
       "emergencyContactName": "Emergency contact name",
       "emergencyContactPhone": "Emergency contact phone",
-      "parentUid": "Parent account UID (optional — links this player to a parent's login)",
+      "parentUid": "Parent account UID(s) — comma-separated if more than one (optional, links this player to a parent's login)",
+      "playerUid": "Player's own account UID (optional — links this player to their own login)",
+      "jerseyNumber": "Jersey number (optional)",
       "levelBeginner": "Beginner",
       "levelDeveloping": "Developing",
       "levelIntermediate": "Intermediate",
@@ -532,7 +556,8 @@
       "catTraining": "Training",
       "catMatch": "Match",
       "catTeam": "Team",
-      "catEvent": "Event"
+      "catEvent": "Event",
+      "tagPlayers": "Tag players in this photo (optional — tagged players will see it in their personal journey)"
     },
     "registrationsPageForm": {
       "approved": "{{name}} approved and added as an active player.",
@@ -543,12 +568,36 @@
       "dob": "DOB",
       "parentLabel": "Parent",
       "noDecisions": "No decisions made yet."
+    },
+    "matchStatsPage": {
+      "title": "Match Statistics",
+      "selectMatch": "Select match",
+      "saved": "Stats saved.",
+      "minutesPlayed": "Minutes played",
+      "goals": "Goals",
+      "assists": "Assists",
+      "shots": "Shots",
+      "shotsOnTarget": "Shots on target",
+      "passes": "Passes",
+      "successfulPasses": "Successful passes",
+      "keyPasses": "Key passes",
+      "tackles": "Tackles",
+      "interceptions": "Interceptions",
+      "ballRecoveries": "Ball recoveries",
+      "clearances": "Clearances",
+      "blocks": "Blocks"
     }
   },
   "notFound": {
     "eyebrow": "404",
     "title": "This page is offside.",
     "body": "The page you're looking for doesn't exist."
+  },
+  "appHeader": {
+    "goodMorning": "Good morning{{name}}",
+    "goodAfternoon": "Good afternoon{{name}}",
+    "goodEvening": "Good evening{{name}}",
+    "subtitle": "SCORE Football Academy"
   },
   "messaging": {
     "title": "Messages",
@@ -560,6 +609,49 @@
     "noConversationsHint": "Messages from parents will appear here.",
     "noMessagesYet": "No messages yet",
     "backToInbox": "Back to inbox"
+  },
+  "player": {
+    "dashboardEyebrow": "Player dashboard",
+    "welcome": "Hey {{name}}.",
+    "attendanceRate": "Attendance",
+    "notLinkedYet": "Your account isn't linked to a player profile yet",
+    "notLinkedYetHint": "Ask the academy to link your account from the admin panel — this usually takes a moment once you've registered.",
+    "noEvaluationYet": "No evaluation yet",
+    "noEvaluationYetHint": "Your FIFA card appears here after your coach submits your first evaluation.",
+    "loginEyebrow": "Player access",
+    "loginTitle": "Player sign in",
+    "registerEyebrow": "Join SCORE",
+    "registerTitle": "Create your player account",
+    "registerSubtitle": "This is your own personal football account — separate from your parent's. An academy admin will link it to your player profile.",
+    "createAccount": "Create account",
+    "registerSuccessEyebrow": "Account created",
+    "registerSuccessTitle": "You're in.",
+    "registerSuccessBody": "Give your email to the academy so they can link this account to your player profile — then your FIFA card, stats, and attendance will appear here.",
+    "tasksPage": {
+      "title": "Tasks",
+      "today": "Today's Tasks",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "noneToday": "No tasks for today — enjoy the rest!",
+      "noTasksAtAll": "No tasks assigned yet",
+      "viewAll": "View all"
+    },
+    "statsPage": {
+      "title": "My Statistics",
+      "matchesPlayed": "Matches",
+      "trainingSessions": "Sessions"
+    },
+    "journeyPage": {
+      "title": "My Football Journey",
+      "subtitle": "Photos from your training sessions, matches, and academy events.",
+      "empty": "No photos yet",
+      "emptyHint": "Your coach will tag you in photos from training and matches — they'll show up here."
+    },
+    "progressPage": {
+      "title": "Progress",
+      "overallTrend": "Overall Rating Over Time",
+      "attributeTrend": "Attribute Progression"
+    }
   },
   "footer": {
     "tagline": "Professional football training built to develop skill, discipline, and teamwork in every player.",
