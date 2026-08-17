@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Button from '../../components/ui/Button'
 import ProgramCard from '../../components/cards/ProgramCard'
 import PlayerAttributeCard from '../../components/cards/PlayerAttributeCard'
+import logo from '../../assets/images/score-logo.png'
 import heroImg from '../../assets/images/team-huddle.jpg'
 import trainingImg from '../../assets/images/kids-training.jpg'
 import conesImg from '../../assets/images/cones-training.jpg'
@@ -51,7 +52,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-pitch via-pitch/70 to-pitch/10" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
-          <p className="eyebrow text-grass-bright">{t('home.eyebrow')}</p>
+          <img src={logo} alt="SCORE" className="h-12 w-auto rounded-lg bg-bone px-3 py-2 object-contain md:h-16" />
+          <p className="mt-6 eyebrow text-grass-bright">{t('home.eyebrow')}</p>
           <h1 className="mt-3 max-w-3xl text-5xl text-bone md:text-7xl">
             {t('home.headline1')}
             <br />

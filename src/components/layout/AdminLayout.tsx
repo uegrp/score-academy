@@ -16,6 +16,7 @@ export default function AdminLayout() {
     { to: '/admin/announcements', label: t('admin.newsPage') },
     { to: '/admin/gallery', label: t('admin.galleryPage') },
     { to: '/admin/registrations', label: t('admin.registrationsPage') },
+    { to: '/admin/messages', label: t('messaging.title') },
   ]
 
   return (

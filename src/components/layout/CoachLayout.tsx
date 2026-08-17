@@ -10,6 +10,7 @@ export default function CoachLayout() {
     { to: '/coach/players', label: t('bottomNav.players') },
     { to: '/coach/attendance', label: t('bottomNav.attendance') },
     { to: '/coach/evaluations', label: t('bottomNav.evaluate') },
+    { to: '/coach/messages', label: t('messaging.title') },
   ]
 
   return (

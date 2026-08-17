@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../../components/ui/Button'
+import logo from '../../assets/images/score-logo.png'
 
 export default function Login() {
   const { t } = useTranslation()
@@ -31,7 +32,8 @@ export default function Login() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
       <div className="w-full max-w-sm">
-        <p className="eyebrow text-grass">{t('auth.loginEyebrow')}</p>
+        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+        <p className="mt-8 eyebrow text-grass">{t('auth.loginEyebrow')}</p>
         <h1 className="mt-2 text-4xl text-pitch">{t('auth.loginTitle')}</h1>
 
         {!configured && (

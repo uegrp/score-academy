@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
@@ -43,6 +44,34 @@ export default function ParentDashboard() {
           </div>
         )}
       </section>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <Link
+          to="/parent/checkin"
+          className="flex items-center justify-between rounded-card border border-grass/30 bg-grass/5 p-5 transition-colors hover:bg-grass/10"
+        >
+          <div>
+            <p className="text-lg font-semibold text-pitch">{t('parent.checkIn.title')}</p>
+            <p className="text-sm text-pitch/60">{t('parent.checkIn.subtitle')}</p>
+          </div>
+          <span aria-hidden="true" className="text-2xl text-grass rtl:-scale-x-100">
+            →
+          </span>
+        </Link>
+
+        <Link
+          to="/parent/messages"
+          className="flex items-center justify-between rounded-card border border-line-soft bg-white p-5 transition-colors hover:bg-bone-dim/20"
+        >
+          <div>
+            <p className="text-lg font-semibold text-pitch">{t('messaging.title')}</p>
+            <p className="text-sm text-pitch/60">{t('messaging.parentSubtitle')}</p>
+          </div>
+          <span aria-hidden="true" className="text-2xl text-pitch/40 rtl:-scale-x-100">
+            →
+          </span>
+        </Link>
+      </div>
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <section>

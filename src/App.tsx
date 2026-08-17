@@ -30,12 +30,15 @@ const ParentTraining = lazy(() => import('./pages/parent/ParentTraining'))
 const ParentAttendance = lazy(() => import('./pages/parent/ParentAttendance'))
 const ParentPerformance = lazy(() => import('./pages/parent/ParentPerformance'))
 const ParentProfile = lazy(() => import('./pages/parent/ParentProfile'))
+const ParentCheckIn = lazy(() => import('./pages/parent/ParentCheckIn'))
+const ParentMessages = lazy(() => import('./pages/parent/ParentMessages'))
 
 const CoachLayout = lazy(() => import('./components/layout/CoachLayout'))
 const CoachDashboard = lazy(() => import('./pages/coach/CoachDashboard'))
 const CoachPlayers = lazy(() => import('./pages/coach/CoachPlayers'))
 const CoachAttendance = lazy(() => import('./pages/coach/CoachAttendance'))
 const CoachEvaluations = lazy(() => import('./pages/coach/CoachEvaluations'))
+const CoachMessages = lazy(() => import('./pages/coach/CoachMessages'))
 
 const AdminLayout = lazy(() => import('./components/layout/AdminLayout'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
@@ -48,6 +51,7 @@ const AdminMatches = lazy(() => import('./pages/admin/AdminMatches'))
 const AdminAnnouncements = lazy(() => import('./pages/admin/AdminAnnouncements'))
 const AdminGallery = lazy(() => import('./pages/admin/AdminGallery'))
 const AdminRegistrations = lazy(() => import('./pages/admin/AdminRegistrations'))
+const AdminMessages = lazy(() => import('./pages/admin/AdminMessages'))
 
 export default function App() {
   return (
@@ -84,6 +88,8 @@ export default function App() {
             <Route path="attendance" element={<ParentAttendance />} />
             <Route path="performance" element={<ParentPerformance />} />
             <Route path="profile" element={<ParentProfile />} />
+            <Route path="checkin" element={<ParentCheckIn />} />
+            <Route path="messages" element={<ParentMessages />} />
           </Route>
 
           {/* Coach panel */}
@@ -101,6 +107,7 @@ export default function App() {
             <Route path="players" element={<CoachPlayers />} />
             <Route path="attendance" element={<CoachAttendance />} />
             <Route path="evaluations" element={<CoachEvaluations />} />
+            <Route path="messages" element={<CoachMessages />} />
           </Route>
 
           {/* Admin panel */}
@@ -124,6 +131,7 @@ export default function App() {
             <Route path="announcements" element={<AdminAnnouncements />} />
             <Route path="gallery" element={<AdminGallery />} />
             <Route path="registrations" element={<AdminRegistrations />} />
+            <Route path="messages" element={<AdminMessages />} />
           </Route>
 
           <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />

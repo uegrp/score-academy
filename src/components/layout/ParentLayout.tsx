@@ -11,6 +11,7 @@ export default function ParentLayout() {
     { to: '/parent/attendance', label: t('bottomNav.attendance') },
     { to: '/parent/performance', label: t('bottomNav.performance') },
     { to: '/parent/profile', label: t('bottomNav.profile') },
+    { to: '/parent/messages', label: t('messaging.title') },
   ]
 
   return (

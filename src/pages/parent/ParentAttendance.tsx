@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import type { AttendanceRecord, Player, TrainingSession } from '../../types'
 import { where } from '../../lib/collections'
 import EmptyState from '../../components/ui/EmptyState'
+import Button from '../../components/ui/Button'
 import { Select } from '../../components/ui/FormField'
 
 export default function ParentAttendance() {
@@ -46,7 +48,12 @@ export default function ParentAttendance() {
 
   return (
     <div>
-      <h1 className="text-3xl text-pitch">{t('parent.attendance')}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl text-pitch">{t('parent.attendance')}</h1>
+        <Link to="/parent/checkin">
+          <Button size="sm">{t('parent.checkIn.title')}</Button>
+        </Link>
+      </div>
 
       {players.length === 0 ? (
         <div className="mt-6">

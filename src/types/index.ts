@@ -161,3 +161,31 @@ export interface Registration {
   submittedAt: number
   status: 'pending' | 'approved' | 'rejected'
 }
+
+// ---- Messaging ----
+// One conversation per parent with "the coaching staff" (any coach or
+// admin can read/reply — this mirrors a shared academy inbox rather
+// than a specific 1:1 with a single named coach). The conversation
+// document's id is always the parent's Firebase Auth uid, which keeps
+// the security rule simple: a parent may only touch the conversation
+// whose id equals their own uid.
+export interface Conversation {
+  id: string
+  parentUserId: string
+  parentName: string
+  lastMessageText: string
+  lastMessageAt: number
+  lastSenderRole: 'parent' | 'staff' | null
+  unreadByStaff: boolean
+  unreadByParent: boolean
+}
+
+export interface ChatMessage {
+  id: string
+  senderId: string
+  senderRole: 'parent' | 'staff'
+  senderName: string
+  text: string
+  sentAt: number
+}
+

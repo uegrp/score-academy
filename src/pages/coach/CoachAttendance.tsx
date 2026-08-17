@@ -5,8 +5,10 @@ import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, where } from '../../lib/collections'
 import type { AttendanceRecord, AttendanceStatus, Player, Team, TrainingSession } from '../../types'
 import EmptyState from '../../components/ui/EmptyState'
+import Button from '../../components/ui/Button'
 import { Select } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
+import CheckInQrModal from '../../components/coach/CheckInQrModal'
 
 export default function CoachAttendance() {
   const { t } = useTranslation()
@@ -47,6 +49,7 @@ export default function CoachAttendance() {
 
   const [saving, setSaving] = useState<string | null>(null)
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [qrOpen, setQrOpen] = useState(false)
 
   const attendanceByPlayer = useMemo(
     () => Object.fromEntries(existingAttendance.map((a) => [a.playerId, a])),
@@ -105,6 +108,14 @@ export default function CoachAttendance() {
           </div>
 
           {sessionId && (
+            <div className="mt-4">
+              <Button size="sm" variant="secondary" onClick={() => setQrOpen(true)}>
+                {t('coach.showCheckInQr')}
+              </Button>
+            </div>
+          )}
+
+          {sessionId && (
             <div className="mt-6">
               {players.length === 0 ? (
                 <EmptyState title={t('coach.noPlayersInSessionTeam')} />
@@ -143,6 +154,15 @@ export default function CoachAttendance() {
             </div>
           )}
         </>
+      )}
+
+      {session && (
+        <CheckInQrModal
+          open={qrOpen}
+          onClose={() => setQrOpen(false)}
+          sessionId={session.id}
+          sessionLabel={`${teams.find((tm) => tm.id === session.teamId)?.name ?? t('coach.team')} · ${new Date(session.date).toLocaleDateString()} ${session.time}`}
+        />
       )}
     </div>
   )

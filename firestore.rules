@@ -86,7 +86,14 @@ service cloud.firestore {
     match /attendance/{recordId} {
       allow read: if isAdmin() || isCoach() ||
         (isParent() && get(/databases/$(database)/documents/players/$(resource.data.playerId)).data.parentUserId == request.auth.uid);
-      allow create, update: if isAdmin() || isCoach();
+      // Parents may self-check-in via the QR scanner (ParentCheckIn.tsx) —
+      // but only as "present", and only for a player they actually own.
+      // Coaches/admins can still mark any status for any player on their teams.
+      allow create: if isAdmin() || isCoach() ||
+        (isParent() &&
+          request.resource.data.status == 'present' &&
+          get(/databases/$(database)/documents/players/$(request.resource.data.playerId)).data.parentUserId == request.auth.uid);
+      allow update: if isAdmin() || isCoach();
       allow delete: if isAdmin();
     }
 
@@ -123,6 +130,24 @@ service cloud.firestore {
       allow read: if isAdmin() || resource.data.parentEmail == request.auth.token.email;
       allow update: if isAdmin();
       allow delete: if isAdmin();
+    }
+
+    // ---- conversations (parent <-> coaching staff messaging) ----
+    // The conversation document's id is always the parent's own auth uid,
+    // which is what makes the parent-side check a simple id comparison
+    // instead of a get() lookup.
+    match /conversations/{conversationId} {
+      allow read, write: if isAdmin() || isCoach() || (isParent() && conversationId == request.auth.uid);
+
+      match /messages/{messageId} {
+        allow read: if isAdmin() || isCoach() || (isParent() && conversationId == request.auth.uid);
+        // Anyone in the conversation can post, but only as themselves —
+        // never on behalf of another user.
+        allow create: if (isAdmin() || isCoach() || (isParent() && conversationId == request.auth.uid))
+          && request.resource.data.senderId == request.auth.uid;
+        // Messages are an immutable log once sent.
+        allow update, delete: if false;
+      }
     }
   }
 }

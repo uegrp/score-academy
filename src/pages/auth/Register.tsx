@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button'
 import { useAuth } from '../../context/AuthContext'
 import { createDoc } from '../../lib/collections'
 import type { Registration } from '../../types'
+import logo from '../../assets/images/score-logo.png'
 
 interface FormState {
   playerFullName: string
@@ -147,7 +148,8 @@ export default function Register() {
     return (
       <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
         <div className="max-w-md rounded-card border border-grass/30 bg-pitch-soft p-8 text-center">
-          <p className="eyebrow text-grass-bright">{t('auth.successEyebrow')}</p>
+          <img src={logo} alt="SCORE" className="mx-auto h-9 w-auto rounded-md bg-bone px-2 py-1 object-contain" />
+          <p className="mt-6 eyebrow text-grass-bright">{t('auth.successEyebrow')}</p>
           <h1 className="mt-3 text-3xl text-bone">
             {t('auth.successTitle', { name: form.playerFullName.split(' ')[0] })}
           </h1>
@@ -177,7 +179,8 @@ export default function Register() {
   return (
     <div className="bg-bone px-4 py-16">
       <form onSubmit={handleSubmit} noValidate className="mx-auto max-w-2xl">
-        <p className="eyebrow text-grass">{t('auth.registerEyebrow')}</p>
+        <img src={logo} alt="SCORE" className="h-9 w-auto object-contain" />
+        <p className="mt-8 eyebrow text-grass">{t('auth.registerEyebrow')}</p>
         <h1 className="mt-2 text-4xl text-pitch">{t('auth.registerTitle')}</h1>
         <p className="mt-2 text-sm text-pitch/70">{t('auth.registerSubtitle')}</p>
 

@@ -283,7 +283,21 @@
     "level": "Level",
     "joiningDate": "Joining date",
     "previousClub": "Previous club",
-    "emergencyContact": "Emergency contact"
+    "emergencyContact": "Emergency contact",
+    "checkIn": {
+      "title": "Scan to check in",
+      "subtitle": "Point your camera at the QR code your coach is showing.",
+      "invalidCode": "That doesn't look like a SCORE check-in code.",
+      "cameraFailed": "Couldn't access the camera. Check your browser permissions and try again.",
+      "failed": "Check-in failed. Please try again.",
+      "sessionFound": "Session found",
+      "alreadyCheckedIn": "You're already checked in for this session.",
+      "confirmButton": "Check in",
+      "successEyebrow": "Checked in",
+      "successTitle": "Attendance recorded. See you on the pitch!",
+      "scanAnother": "Scan another code",
+      "tryAgain": "Try again"
+    }
   },
   "coach": {
     "dashboardEyebrow": "Coach dashboard",
@@ -300,6 +314,10 @@
     "attendanceSaved": "Attendance saved.",
     "failedToSave": "Failed to save.",
     "noPlayersInSessionTeam": "No players in this team yet",
+    "showCheckInQr": "Show check-in QR",
+    "checkInQrTitle": "Check-in QR code",
+    "qrInstructions": "Players or parents scan this from the Attendance page to check themselves in as present.",
+    "qrGenerateFailed": "Couldn't generate the QR code. Try again.",
     "evaluation": "Performance evaluation",
     "selectPlayer": "Select player",
     "technical": "Technical",
@@ -531,6 +549,17 @@
     "eyebrow": "404",
     "title": "This page is offside.",
     "body": "The page you're looking for doesn't exist."
+  },
+  "messaging": {
+    "title": "Messages",
+    "parentSubtitle": "Chat directly with the coaching staff.",
+    "inputPlaceholder": "Type your message…",
+    "send": "Send",
+    "emptyThread": "Start the conversation — send your first message to the coach.",
+    "noConversations": "No conversations yet",
+    "noConversationsHint": "Messages from parents will appear here.",
+    "noMessagesYet": "No messages yet",
+    "backToInbox": "Back to inbox"
   },
   "footer": {
     "tagline": "Professional football training built to develop skill, discipline, and teamwork in every player.",

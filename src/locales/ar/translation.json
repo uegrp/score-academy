@@ -283,7 +283,21 @@
     "level": "المستوى",
     "joiningDate": "تاريخ الانضمام",
     "previousClub": "النادي السابق",
-    "emergencyContact": "جهة اتصال الطوارئ"
+    "emergencyContact": "جهة اتصال الطوارئ",
+    "checkIn": {
+      "title": "امسح لتسجيل الحضور",
+      "subtitle": "وجّه الكاميرا نحو رمز QR الظاهر عند المدرب.",
+      "invalidCode": "الرمز ده مش رمز تسجيل حضور SCORE صحيح.",
+      "cameraFailed": "تعذّر الوصول للكاميرا. تأكد من صلاحيات المتصفح وحاول مرة أخرى.",
+      "failed": "فشل تسجيل الحضور. حاول مرة أخرى.",
+      "sessionFound": "تم العثور على الجلسة",
+      "alreadyCheckedIn": "أنت مسجّل حضورك بالفعل في هذه الجلسة.",
+      "confirmButton": "تسجيل الحضور",
+      "successEyebrow": "تم تسجيل الحضور",
+      "successTitle": "تم تسجيل حضورك. أراك على أرض الملعب!",
+      "scanAnother": "مسح رمز آخر",
+      "tryAgain": "حاول مرة أخرى"
+    }
   },
   "coach": {
     "dashboardEyebrow": "لوحة تحكم المدرب",
@@ -300,6 +314,10 @@
     "attendanceSaved": "تم حفظ الحضور.",
     "failedToSave": "فشل الحفظ.",
     "noPlayersInSessionTeam": "لا يوجد لاعبون في هذا الفريق بعد",
+    "showCheckInQr": "عرض QR تسجيل الحضور",
+    "checkInQrTitle": "رمز QR لتسجيل الحضور",
+    "qrInstructions": "اللاعبون أو أولياء الأمور يمسحوا الرمز ده من صفحة الحضور عشان يسجلوا حضورهم بنفسهم.",
+    "qrGenerateFailed": "تعذّر توليد رمز QR. حاول مرة أخرى.",
     "evaluation": "تقييم الأداء",
     "selectPlayer": "اختر اللاعب",
     "technical": "فني",
@@ -531,6 +549,17 @@
     "eyebrow": "٤٠٤",
     "title": "الصفحة دي تسلل.",
     "body": "الصفحة اللي بتدور عليها مش موجودة."
+  },
+  "messaging": {
+    "title": "الرسائل",
+    "parentSubtitle": "شات مباشر مع طاقم التدريب.",
+    "inputPlaceholder": "اكتب رسالتك…",
+    "send": "إرسال",
+    "emptyThread": "ابدأ المحادثة — ابعت رسالتك الأولى للمدرب.",
+    "noConversations": "لا توجد محادثات بعد",
+    "noConversationsHint": "رسائل أولياء الأمور هتظهر هنا.",
+    "noMessagesYet": "لا توجد رسائل بعد",
+    "backToInbox": "الرجوع لصندوق الوارد"
   },
   "footer": {
     "tagline": "تدريب احترافي لكرة القدم مصمم لتطوير المهارة والانضباط وروح الفريق لدى كل لاعب.",
