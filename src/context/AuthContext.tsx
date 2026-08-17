@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
+  sendPasswordResetEmail,
   updateProfile,
   type User,
 } from 'firebase/auth'
@@ -20,14 +21,15 @@ interface AuthContextValue {
   /**
    * Signs in and returns the account's role *before* the outer app's
    * async auth-state listener catches up — used by the role-locked login
-   * screens (Login/CoachLogin/AdminLogin) so they can verify the signed-in
-   * account actually belongs there and immediately reject + sign back out
-   * otherwise, rather than briefly granting access and only redirecting
-   * away after the fact.
+   * screens (the unified Login and AdminLogin) so they can verify the
+   * signed-in account actually belongs there and immediately reject +
+   * sign back out otherwise, rather than briefly granting access and only
+   * redirecting away after the fact.
    */
   signInAndGetRole: (email: string, password: string) => Promise<UserRole | null>
   signUp: (email: string, password: string, displayName: string, role: UserRole) => Promise<void>
   signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -82,9 +84,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await firebaseSignOut(auth)
   }
 
+  async function resetPassword(email: string) {
+    await sendPasswordResetEmail(auth, email)
+  }
+
   return (
     <AuthContext.Provider
-      value={{ firebaseUser, appUser, loading, configured: firebaseConfigured, signIn, signInAndGetRole, signUp, signOut }}
+      value={{
+        firebaseUser,
+        appUser,
+        loading,
+        configured: firebaseConfigured,
+        signIn,
+        signInAndGetRole,
+        signUp,
+        signOut,
+        resetPassword,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -188,6 +188,12 @@
   "auth": {
     "loginEyebrow": "أهلًا بعودتك",
     "loginTitle": "تسجيل الدخول",
+    "whoAreYou": "إنت مين؟",
+    "roleNames": {
+      "player": "لاعب",
+      "parent": "ولي أمر",
+      "coach": "مدرب"
+    },
     "coachLoginEyebrow": "دخول المدربين",
     "coachLoginTitle": "تسجيل دخول المدرب",
     "adminLoginEyebrow": "دخول الإدارة",
@@ -196,8 +202,15 @@
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "signIn": "تسجيل الدخول",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "resetEmailSent": "تفقّد بريدك الإلكتروني لرابط إعادة تعيين كلمة المرور.",
     "newToScore": "جديد على SCORE؟",
     "joinAcademy": "انضم للأكاديمية",
+    "backToAccountType": "رجوع",
+    "whatAccountType": "عايز تعمل حساب نوعه إيه؟",
+    "playerAccountHint": "لوحة تحكم شخصية لكرة القدم، بطاقة FIFA، وإحصائياتك.",
+    "parentAccountHint": "سجّل ابنك/بنتك وتابع تقدمهم في الأكاديمية.",
     "registerEyebrow": "انضم لـ SCORE",
     "registerTitle": "تسجيل لاعب",
     "registerSubtitle": "يقوم فريق المدربين بمراجعة كل طلب قبل تعيين اللاعب في فريق.",

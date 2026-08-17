@@ -188,6 +188,12 @@
   "auth": {
     "loginEyebrow": "Welcome back",
     "loginTitle": "Sign in",
+    "whoAreYou": "Who are you?",
+    "roleNames": {
+      "player": "Player",
+      "parent": "Parent",
+      "coach": "Coach"
+    },
     "coachLoginEyebrow": "Coach access",
     "coachLoginTitle": "Coach sign in",
     "adminLoginEyebrow": "Admin access",
@@ -196,8 +202,15 @@
     "email": "Email",
     "password": "Password",
     "signIn": "Sign in",
+    "forgotPassword": "Forgot password?",
+    "sendResetLink": "Send reset link",
+    "resetEmailSent": "Check your email for a password reset link.",
     "newToScore": "New to SCORE?",
     "joinAcademy": "Join the academy",
+    "backToAccountType": "Back",
+    "whatAccountType": "What type of account do you want?",
+    "playerAccountHint": "Your own personal football dashboard, FIFA card, and stats.",
+    "parentAccountHint": "Register your child and supervise their academy progress.",
     "registerEyebrow": "Join SCORE",
     "registerTitle": "Player registration",
     "registerSubtitle": "Applications are reviewed by our coaching staff before a player is placed on a team.",
@@ -259,7 +272,10 @@
       "wrongRoleParent": "This login is for parents. Coaches and admins have their own sign-in pages.",
       "wrongRoleCoach": "This login is for coaches only. Wrong account type for this page.",
       "wrongRoleAdmin": "This login is for academy admins only. Wrong account type for this page.",
-      "wrongRolePlayer": "This login is for players only. Wrong account type for this page."
+      "wrongRolePlayer": "This login is for players only. Wrong account type for this page.",
+      "wrongRoleTab": "This account is registered as a {{role}} account. Please select {{role}} and try again.",
+      "isAdminAccount": "This is an admin account. Please use the admin portal to sign in.",
+      "resetFailed": "Couldn't send the reset email. Check the address and try again."
     }
   },
   "parent": {

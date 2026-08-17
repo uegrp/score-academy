@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../ui/Button'
+import ForgotPassword from './ForgotPassword'
 import logo from '../../assets/images/score-logo.png'
 import type { UserRole } from '../../types'
 
@@ -88,6 +89,10 @@ export default function RoleLoginForm({ allowedRoles, redirectTo, eyebrow, title
             {t('auth.signIn')}
           </Button>
         </form>
+
+        <div className="mt-4 text-center">
+          <ForgotPassword />
+        </div>
 
         {showJoinLink && (
           <p className="mt-6 text-center text-sm text-pitch/70">

@@ -18,10 +18,7 @@ import NotFound from './pages/public/NotFound'
 
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
-import CoachLogin from './pages/auth/CoachLogin'
 import AdminLogin from './pages/auth/AdminLogin'
-import PlayerLogin from './pages/auth/PlayerLogin'
-import PlayerRegister from './pages/auth/PlayerRegister'
 
 // The dashboards (parent/coach/admin) plus their Firebase-heavy CRUD
 // screens are only needed once someone is signed in, so they're
@@ -85,19 +82,18 @@ export default function App() {
           <Route path="/news" element={<PublicLayout><News /></PublicLayout>} />
           <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
 
-          {/* Auth */}
+          {/* Auth — one normal-user entry point (Player/Parent/Coach share
+              /login with a role tab), and a completely separate Admin
+              portal at /admin/login that never appears in normal nav. */}
           <Route path="/login" element={<PublicLayout><Login /></PublicLayout>} />
           <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
-          <Route path="/coach-login" element={<PublicLayout><CoachLogin /></PublicLayout>} />
-          <Route path="/admin-login" element={<PublicLayout><AdminLogin /></PublicLayout>} />
-          <Route path="/player-login" element={<PublicLayout><PlayerLogin /></PublicLayout>} />
-          <Route path="/player-register" element={<PublicLayout><PlayerRegister /></PublicLayout>} />
+          <Route path="/admin/login" element={<PublicLayout><AdminLogin /></PublicLayout>} />
 
           {/* Parent portal */}
           <Route
             path="/parent"
             element={
-              <ProtectedRoute allow={['parent']}>
+              <ProtectedRoute allow={['parent']} loginPath="/login?role=parent">
                 <Suspense fallback={<LoadingScreen />}>
                   <DashboardLayout><ParentLayout /></DashboardLayout>
                 </Suspense>
@@ -117,7 +113,7 @@ export default function App() {
           <Route
             path="/coach"
             element={
-              <ProtectedRoute allow={['coach']} loginPath="/coach-login">
+              <ProtectedRoute allow={['coach']} loginPath="/login?role=coach">
                 <Suspense fallback={<LoadingScreen />}>
                   <DashboardLayout><CoachLayout /></DashboardLayout>
                 </Suspense>
@@ -138,7 +134,7 @@ export default function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute allow={['admin', 'super_admin']} loginPath="/admin-login">
+              <ProtectedRoute allow={['admin', 'super_admin']} loginPath="/admin/login">
                 <Suspense fallback={<LoadingScreen />}>
                   <DashboardLayout><AdminLayout /></DashboardLayout>
                 </Suspense>
@@ -163,7 +159,7 @@ export default function App() {
           <Route
             path="/player"
             element={
-              <ProtectedRoute allow={['player']} loginPath="/player-login">
+              <ProtectedRoute allow={['player']} loginPath="/login?role=player">
                 <Suspense fallback={<LoadingScreen />}>
                   <DashboardLayout><PlayerLayout /></DashboardLayout>
                 </Suspense>
