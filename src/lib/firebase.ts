@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { initializeFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 // All values come from environment variables — never hardcode Firebase
@@ -20,6 +20,15 @@ export const firebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfi
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
-export const db = getFirestore(app)
+// `ignoreUndefinedProperties: true` is the key fix here: every optional
+// field across every form in this app (Register, AdminPlayers,
+// AdminTeams, AdminPrograms, etc.) uses the `value || undefined` pattern
+// for "leave this blank if not applicable". Firestore's default behavior
+// is to *reject the entire write* if any field is literally `undefined`
+// (as opposed to missing or null) — this one setting makes Firestore
+// silently drop those fields instead, which is what every one of those
+// forms actually intended. Without this, any optional field left blank
+// anywhere in the app throws "Unsupported field value: undefined".
+export const db = initializeFirestore(app, { ignoreUndefinedProperties: true })
 export const storage = getStorage(app)
 export default app
