@@ -1,48 +1,49 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import logo from '../../assets/images/score-logo.png'
 
 export default function Footer() {
+  const { t } = useTranslation()
+
   return (
     <footer className="border-t border-line-soft bg-pitch pb-24 pt-12 text-bone-dim lg:pb-12">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
-            <img src={logo} alt="SCORE" className="h-5 w-auto invert" />
-            <p className="mt-4 max-w-xs text-sm">
-              Professional football training built to develop skill, discipline, and teamwork in every player.
-            </p>
+            <img src={logo} alt="SCORE" className="h-8 w-auto rounded-md bg-bone px-2 py-1 object-contain" />
+            <p className="mt-4 max-w-xs text-sm">{t('footer.tagline')}</p>
           </div>
 
           <FooterCol
-            title="Academy"
+            title={t('footer.academy')}
             links={[
-              ['About', '/about'],
-              ['Programs', '/programs'],
-              ['Teams', '/teams'],
-              ['News', '/news'],
+              [t('nav.about'), '/about'],
+              [t('nav.programs'), '/programs'],
+              [t('nav.teams'), '/teams'],
+              [t('nav.news'), '/news'],
             ]}
           />
           <FooterCol
-            title="Get involved"
+            title={t('footer.getInvolved')}
             links={[
-              ['Join SCORE', '/register'],
-              ['Matches', '/matches'],
-              ['Gallery', '/gallery'],
-              ['Contact', '/contact'],
+              [t('nav.join'), '/register'],
+              [t('nav.matches'), '/matches'],
+              [t('nav.gallery'), '/gallery'],
+              [t('nav.contact'), '/contact'],
             ]}
           />
           <div>
-            <p className="eyebrow text-bone">Contact</p>
+            <p className="eyebrow text-bone">{t('footer.contact')}</p>
             <ul className="mt-4 space-y-2 text-sm">
-              <li>Location — to be added</li>
-              <li>Phone — to be added</li>
-              <li>Email — to be added</li>
+              <li>{t('footer.locationTbd')}</li>
+              <li>{t('footer.phoneTbd')}</li>
+              <li>{t('footer.emailTbd')}</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 border-t border-line-soft pt-6 text-xs text-line">
-          © {new Date().getFullYear()} SCORE Football Academy. All rights reserved.
+          © {new Date().getFullYear()} SCORE Football Academy. {t('footer.rights')}
         </div>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { storage } from '../../lib/firebase'
 import { useCollection } from '../../hooks/useCollection'
@@ -12,11 +13,19 @@ import { Select } from '../../components/ui/FormField'
 const CATEGORIES: GalleryItem['category'][] = ['training', 'match', 'team', 'event']
 
 export default function AdminGallery() {
+  const { t } = useTranslation()
   const { data: items, loading } = useCollection<GalleryItem>('gallery')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [category, setCategory] = useState<GalleryItem['category']>('training')
   const [uploading, setUploading] = useState(false)
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+
+  const categoryLabel: Record<string, string> = {
+    training: t('admin.galleryPageForm.catTraining'),
+    match: t('admin.galleryPageForm.catMatch'),
+    team: t('admin.galleryPageForm.catTeam'),
+    event: t('admin.galleryPageForm.catEvent'),
+  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
@@ -27,7 +36,7 @@ export default function AdminGallery() {
       for (const file of Array.from(files)) {
         if (!file.type.startsWith('image/')) continue
         if (file.size > 8 * 1024 * 1024) {
-          setStatus({ type: 'error', message: `${file.name} is over 8MB and was skipped.` })
+          setStatus({ type: 'error', message: t('admin.galleryPageForm.fileTooLarge', { name: file.name }) })
           continue
         }
         const path = `gallery/${Date.now()}-${file.name}`
@@ -40,9 +49,9 @@ export default function AdminGallery() {
           uploadedAt: Date.now(),
         })
       }
-      setStatus({ type: 'success', message: 'Photos uploaded.' })
+      setStatus({ type: 'success', message: t('admin.galleryPageForm.photosUploaded') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Upload failed.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.galleryPageForm.uploadFailed') })
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -50,7 +59,7 @@ export default function AdminGallery() {
   }
 
   async function handleDelete(item: GalleryItem) {
-    if (!confirm('Delete this photo?')) return
+    if (!confirm(t('admin.galleryPageForm.deleteConfirm'))) return
     try {
       // Best-effort storage cleanup — Firestore doc is the source of truth for the UI.
       try {
@@ -61,9 +70,9 @@ export default function AdminGallery() {
         // Non-fatal — the underlying file may already be gone or the URL shape differs.
       }
       await deleteDocById('gallery', item.id)
-      setStatus({ type: 'success', message: 'Photo deleted.' })
+      setStatus({ type: 'success', message: t('admin.galleryPageForm.deleted') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to delete.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.failedDelete') })
     }
   }
 
@@ -71,7 +80,7 @@ export default function AdminGallery() {
     try {
       await updateDocById('gallery', item.id, { category: newCategory })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to update.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.galleryPageForm.failedUpdate') })
     }
   }
 
@@ -80,7 +89,7 @@ export default function AdminGallery() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl text-pitch">Gallery</h1>
+        <h1 className="text-3xl text-pitch">{t('admin.galleryPage')}</h1>
       </div>
 
       <StatusBanner status={status} />
@@ -88,10 +97,10 @@ export default function AdminGallery() {
       <div className="mt-5 flex flex-wrap items-end gap-3 rounded-card border border-line-soft bg-white p-4">
         <div className="w-48">
           <Select
-            label="Category for upload"
+            label={t('admin.galleryPageForm.categoryForUpload')}
             value={category}
             onChange={(e) => setCategory(e.target.value as GalleryItem['category'])}
-            options={CATEGORIES.map((c) => ({ value: c, label: c[0].toUpperCase() + c.slice(1) }))}
+            options={CATEGORIES.map((c) => ({ value: c, label: categoryLabel[c] }))}
           />
         </div>
         <input
@@ -109,7 +118,7 @@ export default function AdminGallery() {
             loading={uploading}
             onClick={() => fileInputRef.current?.click()}
           >
-            {uploading ? 'Uploading…' : '+ Upload photos'}
+            {uploading ? t('admin.galleryPageForm.uploading') : `+ ${t('admin.galleryPageForm.uploadPhotos')}`}
           </Button>
         </label>
       </div>
@@ -118,7 +127,7 @@ export default function AdminGallery() {
         {loading ? (
           <div className="h-40 animate-pulse rounded-card bg-line-soft/30" />
         ) : sorted.length === 0 ? (
-          <EmptyState title="No photos yet" hint="Upload training, match, team, or event photos." />
+          <EmptyState title={t('emptyStates.noGallery')} hint={t('emptyStates.noGalleryHint')} />
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {sorted.map((item) => (
@@ -132,7 +141,7 @@ export default function AdminGallery() {
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c} className="text-pitch">
-                        {c}
+                        {categoryLabel[c]}
                       </option>
                     ))}
                   </select>
@@ -140,7 +149,7 @@ export default function AdminGallery() {
                     onClick={() => handleDelete(item)}
                     className="rounded-full bg-danger px-2 py-0.5 text-xs text-bone"
                   >
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>

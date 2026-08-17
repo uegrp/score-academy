@@ -7,7 +7,7 @@
 // since their filename changes whenever their content does.
 const CACHE_NAME = 'score-shell-v2'
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   self.skipWaiting()
 })
 

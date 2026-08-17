@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import type { Player, Team, TrainingSession } from '../../types'
@@ -7,6 +8,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import { Select } from '../../components/ui/FormField'
 
 export default function ParentTraining() {
+  const { t } = useTranslation()
   const { appUser } = useAuth()
   const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserId', '==', appUser.uid)] : [])
   const [playerId, setPlayerId] = useState('')
@@ -24,22 +26,22 @@ export default function ParentTraining() {
     .filter((s) => s.status !== 'cancelled')
     .sort((a, b) => a.date - b.date)
 
-  const teamName = (id: string) => teams.find((t) => t.id === id)?.name ?? ''
+  const teamName = (id: string) => teams.find((tm) => tm.id === id)?.name ?? ''
 
   return (
     <div>
-      <h1 className="text-3xl text-pitch">Training schedule</h1>
+      <h1 className="text-3xl text-pitch">{t('parent.training')}</h1>
 
       {players.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="No player linked yet" hint="Once your registration is approved, this will populate." />
+          <EmptyState title={t('emptyStates.noPlayerLinked')} hint={t('emptyStates.noPlayerLinkedHint')} />
         </div>
       ) : (
         <>
           {players.length > 1 && (
             <div className="mt-5 max-w-xs">
               <Select
-                label="Player"
+                label={t('parent.player')}
                 value={playerId || players[0].id}
                 onChange={(e) => setPlayerId(e.target.value)}
                 options={players.map((p) => ({ value: p.id, label: p.fullName }))}
@@ -49,11 +51,11 @@ export default function ParentTraining() {
 
           <div className="mt-6">
             {!activePlayer?.teamId ? (
-              <EmptyState title="Not assigned to a team yet" />
+              <EmptyState title={t('emptyStates.noTeamAssigned')} />
             ) : loading ? (
               <div className="h-32 animate-pulse rounded-card bg-line-soft/30" />
             ) : upcoming.length === 0 ? (
-              <EmptyState title="No upcoming training sessions" />
+              <EmptyState title={t('emptyStates.noTraining')} />
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 {upcoming.map((s) => (

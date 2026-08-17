@@ -99,3 +99,29 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* ---- RTL (Arabic) typography ----
+   Barlow Condensed / JetBrains Mono have no Arabic glyphs, and the wide
+   letter-spacing + uppercase styling used for Latin headings breaks Arabic
+   letter joining. Cairo is used instead for all text once dir="rtl" is
+   set on <html>, and the Latin-only decorative styling is disabled. */
+html[dir="rtl"] body,
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] .font-display,
+html[dir="rtl"] .eyebrow,
+html[dir="rtl"] .stat-figure {
+  font-family: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}
+
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] .font-display,
+html[dir="rtl"] .eyebrow {
+  letter-spacing: normal;
+  text-transform: none;
+}

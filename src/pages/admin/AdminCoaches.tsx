@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, deleteDocById } from '../../lib/collections'
 import type { Coach, Team } from '../../types'
@@ -12,6 +13,7 @@ type FormState = { fullName: string; specialty: string; userId: string; assigned
 const emptyForm: FormState = { fullName: '', specialty: '', userId: '', assignedTeamIds: [] }
 
 export default function AdminCoaches() {
+  const { t } = useTranslation()
   const { data: coaches, loading } = useCollection<Coach>('coaches')
   const { data: teams } = useCollection<Team>('teams')
 
@@ -67,38 +69,38 @@ export default function AdminCoaches() {
         if (payload.userId) {
           await updateDocById('users', payload.userId, { linkedTeamIds: payload.assignedTeamIds }).catch(() => {})
         }
-        setStatus({ type: 'success', message: 'Coach updated.' })
+        setStatus({ type: 'success', message: t('admin.coachesPageForm.updated') })
       } else {
         await createDoc('coaches', payload)
         if (payload.userId) {
           await updateDocById('users', payload.userId, { linkedTeamIds: payload.assignedTeamIds }).catch(() => {})
         }
-        setStatus({ type: 'success', message: 'Coach added.' })
+        setStatus({ type: 'success', message: t('admin.coachesPageForm.added') })
       }
       setModalOpen(false)
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Something went wrong.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.somethingWrong') })
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(c: Coach) {
-    if (!confirm(`Remove coach ${c.fullName}?`)) return
+    if (!confirm(t('admin.coachesPageForm.removeConfirm', { name: c.fullName }))) return
     try {
       await deleteDocById('coaches', c.id)
-      setStatus({ type: 'success', message: `${c.fullName} removed.` })
+      setStatus({ type: 'success', message: t('admin.coachesPageForm.removed', { name: c.fullName }) })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to delete.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.failedDelete') })
     }
   }
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl text-pitch">Coaches</h1>
+        <h1 className="text-3xl text-pitch">{t('admin.coachesPage')}</h1>
         <Button size="sm" onClick={openAdd}>
-          + Add coach
+          + {t('admin.addCoach')}
         </Button>
       </div>
 
@@ -108,7 +110,7 @@ export default function AdminCoaches() {
         {loading ? (
           <div className="h-40 animate-pulse rounded-card bg-line-soft/30" />
         ) : coaches.length === 0 ? (
-          <EmptyState title="No coaches yet" hint="Add a coach and assign them to teams." />
+          <EmptyState title={t('emptyStates.noCoaches')} hint={t('emptyStates.noCoachesHint')} />
         ) : (
           <div className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {coaches.map((c) => (
@@ -116,21 +118,21 @@ export default function AdminCoaches() {
                 <div>
                   <p className="font-medium text-pitch">{c.fullName}</p>
                   <p className="text-sm text-pitch/60">
-                    {c.specialty || 'General coaching'} ·{' '}
+                    {c.specialty || t('admin.coachesPageForm.generalCoaching')} ·{' '}
                     {c.assignedTeamIds?.length
                       ? teams
-                          .filter((t) => c.assignedTeamIds.includes(t.id))
-                          .map((t) => t.name)
+                          .filter((tm) => c.assignedTeamIds.includes(tm.id))
+                          .map((tm) => tm.name)
                           .join(', ')
-                      : 'No teams assigned'}
+                      : t('admin.coachesPageForm.noTeamsAssignedShort')}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="secondary" onClick={() => openEdit(c)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(c)}>
-                    Remove
+                    {t('common.delete')}
                   </Button>
                 </div>
               </div>
@@ -139,51 +141,51 @@ export default function AdminCoaches() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit coach' : 'Add coach'}>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? t('common.edit') : t('admin.addCoach')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Full name"
+            label={t('admin.playersPage.fullName')}
             required
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
           />
           <Input
-            label="Specialty (optional)"
-            placeholder="e.g. Goalkeeping, fitness"
+            label={t('admin.coachesPageForm.specialty')}
+            placeholder={t('admin.coachesPageForm.specialtyPlaceholder')}
             value={form.specialty}
             onChange={(e) => setForm({ ...form, specialty: e.target.value })}
           />
           <Input
-            label="Linked account UID (from Firebase Auth, so they can log in as coach)"
+            label={t('admin.coachesPageForm.linkedUid')}
             value={form.userId}
             onChange={(e) => setForm({ ...form, userId: e.target.value })}
           />
           <div>
-            <p className="text-sm font-medium text-pitch/80">Assigned teams</p>
+            <p className="text-sm font-medium text-pitch/80">{t('admin.coachesPageForm.assignedTeams')}</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {teams.length === 0 && <p className="text-sm text-pitch/50">Create a team first.</p>}
-              {teams.map((t) => (
+              {teams.length === 0 && <p className="text-sm text-pitch/50">{t('admin.coachesPageForm.createTeamFirst')}</p>}
+              {teams.map((tm) => (
                 <button
                   type="button"
-                  key={t.id}
-                  onClick={() => toggleTeam(t.id)}
+                  key={tm.id}
+                  onClick={() => toggleTeam(tm.id)}
                   className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                    form.assignedTeamIds.includes(t.id)
+                    form.assignedTeamIds.includes(tm.id)
                       ? 'border-grass bg-grass/10 text-grass'
                       : 'border-line-soft text-pitch/60'
                   }`}
                 >
-                  {t.name}
+                  {tm.name}
                 </button>
               ))}
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editingId ? 'Save changes' : 'Add coach'}
+              {editingId ? t('common.save') : t('admin.addCoach')}
             </Button>
           </div>
         </form>

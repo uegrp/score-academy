@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../../components/ui/Button'
 
 export default function Login() {
+  const { t } = useTranslation()
   const { signIn, configured } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -19,7 +21,8 @@ export default function Login() {
       await signIn(email, password)
       navigate('/')
     } catch (err) {
-      setError(err instanceof Error ? mapError(err.message) : 'Something went wrong. Try again.')
+      console.error('[SCORE] Sign in failed:', err)
+      setError(err instanceof Error ? mapError(err.message, t) : t('auth.errors.loginGeneric'))
     } finally {
       setLoading(false)
     }
@@ -28,17 +31,17 @@ export default function Login() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
       <div className="w-full max-w-sm">
-        <p className="eyebrow text-grass">Welcome back</p>
-        <h1 className="mt-2 text-4xl text-pitch">Sign in</h1>
+        <p className="eyebrow text-grass">{t('auth.loginEyebrow')}</p>
+        <h1 className="mt-2 text-4xl text-pitch">{t('auth.loginTitle')}</h1>
 
         {!configured && (
           <p className="mt-4 rounded-card border border-warn/40 bg-warn/10 p-3 text-sm text-pitch">
-            Firebase isn't configured yet — add your project keys to <code>.env.local</code> to enable sign in.
+            {t('auth.notConfigured')}
           </p>
         )}
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-          <Field label="Email">
+          <Field label={t('auth.email')}>
             <input
               type="email"
               required
@@ -48,7 +51,7 @@ export default function Login() {
               className="input"
             />
           </Field>
-          <Field label="Password">
+          <Field label={t('auth.password')}>
             <input
               type="password"
               required
@@ -62,14 +65,14 @@ export default function Login() {
           {error && <p className="text-sm text-danger">{error}</p>}
 
           <Button type="submit" loading={loading} className="mt-2 w-full" disabled={!configured}>
-            Sign in
+            {t('auth.signIn')}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-pitch/70">
-          New to SCORE?{' '}
+          {t('auth.newToScore')}{' '}
           <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
-            Join the academy
+            {t('auth.joinAcademy')}
           </Link>
         </p>
       </div>
@@ -86,11 +89,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-function mapError(message: string) {
+function mapError(message: string, t: (key: string) => string) {
   if (message.includes('invalid-credential') || message.includes('wrong-password')) {
-    return 'Incorrect email or password.'
+    return t('auth.errors.invalidCredential')
   }
-  if (message.includes('user-not-found')) return 'No account found with that email.'
-  if (message.includes('too-many-requests')) return 'Too many attempts. Try again shortly.'
-  return 'Sign in failed. Please try again.'
+  if (message.includes('user-not-found')) return t('auth.errors.userNotFound')
+  if (message.includes('too-many-requests')) return t('auth.errors.tooManyRequests')
+  return t('auth.errors.loginGeneric')
 }

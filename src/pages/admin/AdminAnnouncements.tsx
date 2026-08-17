@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, deleteDocById } from '../../lib/collections'
 import type { Announcement } from '../../types'
@@ -12,6 +13,7 @@ type FormState = { title: string; body: string; category: Announcement['category
 const emptyForm: FormState = { title: '', body: '', category: 'news', published: true }
 
 export default function AdminAnnouncements() {
+  const { t } = useTranslation()
   const { data: items, loading } = useCollection<Announcement>('announcements')
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -21,6 +23,14 @@ export default function AdminAnnouncements() {
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const sorted = [...items].sort((a, b) => b.publishedAt - a.publishedAt)
+
+  const categoryLabel: Record<string, string> = {
+    news: t('admin.announcementsPageForm.catNews'),
+    training: t('admin.announcementsPageForm.catTraining'),
+    match: t('admin.announcementsPageForm.catMatch'),
+    event: t('admin.announcementsPageForm.catEvent'),
+    notice: t('admin.announcementsPageForm.catNotice'),
+  }
 
   function openAdd() {
     setEditingId(null)
@@ -50,14 +60,14 @@ export default function AdminAnnouncements() {
       }
       if (editingId) {
         await updateDocById('announcements', editingId, payload)
-        setStatus({ type: 'success', message: 'Announcement updated.' })
+        setStatus({ type: 'success', message: t('admin.announcementsPageForm.updated') })
       } else {
         await createDoc('announcements', payload)
-        setStatus({ type: 'success', message: 'Announcement published.' })
+        setStatus({ type: 'success', message: t('admin.announcementsPageForm.published') })
       }
       setModalOpen(false)
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Something went wrong.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.somethingWrong') })
     } finally {
       setSaving(false)
     }
@@ -66,28 +76,31 @@ export default function AdminAnnouncements() {
   async function togglePublish(a: Announcement) {
     try {
       await updateDocById('announcements', a.id, { published: !a.published })
-      setStatus({ type: 'success', message: a.published ? 'Unpublished.' : 'Published.' })
+      setStatus({
+        type: 'success',
+        message: a.published ? t('admin.announcementsPageForm.unpublished') : t('admin.announcementsPageForm.publishedShort'),
+      })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to update.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.announcementsPageForm.failedUpdate') })
     }
   }
 
   async function handleDelete(a: Announcement) {
-    if (!confirm(`Delete "${a.title}"?`)) return
+    if (!confirm(t('admin.announcementsPageForm.deleteConfirm', { title: a.title }))) return
     try {
       await deleteDocById('announcements', a.id)
-      setStatus({ type: 'success', message: 'Deleted.' })
+      setStatus({ type: 'success', message: t('admin.announcementsPageForm.deleted') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to delete.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.failedDelete') })
     }
   }
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl text-pitch">News & announcements</h1>
+        <h1 className="text-3xl text-pitch">{t('admin.newsPage')}</h1>
         <Button size="sm" onClick={openAdd}>
-          + New announcement
+          + {t('admin.newAnnouncement')}
         </Button>
       </div>
 
@@ -97,7 +110,7 @@ export default function AdminAnnouncements() {
         {loading ? (
           <div className="h-40 animate-pulse rounded-card bg-line-soft/30" />
         ) : sorted.length === 0 ? (
-          <EmptyState title="No announcements yet" hint="Publish news, training or match updates for the academy." />
+          <EmptyState title={t('emptyStates.noAnnouncements')} hint={t('emptyStates.noAnnouncementsHint')} />
         ) : (
           <div className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {sorted.map((a) => (
@@ -105,21 +118,21 @@ export default function AdminAnnouncements() {
                 <div>
                   <p className="font-medium text-pitch">{a.title}</p>
                   <p className="text-sm text-pitch/60">
-                    {a.category} · {new Date(a.publishedAt).toLocaleDateString()} ·{' '}
+                    {categoryLabel[a.category]} · {new Date(a.publishedAt).toLocaleDateString()} ·{' '}
                     <span className={a.published ? 'text-grass' : 'text-pitch/40'}>
-                      {a.published ? 'Published' : 'Draft'}
+                      {a.published ? t('common.published') : t('common.draft')}
                     </span>
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="ghost" className="!text-pitch !border-line-soft" onClick={() => togglePublish(a)}>
-                    {a.published ? 'Unpublish' : 'Publish'}
+                    {a.published ? t('admin.announcementsPageForm.unpublish') : t('admin.announcementsPageForm.publish')}
                   </Button>
                   <Button size="sm" variant="secondary" onClick={() => openEdit(a)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(a)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </div>
@@ -131,32 +144,32 @@ export default function AdminAnnouncements() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingId ? 'Edit announcement' : 'New announcement'}
+        title={editingId ? t('common.edit') : t('admin.newAnnouncement')}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Title"
+            label={t('admin.announcementsPageForm.title')}
             required
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
           <Textarea
-            label="Body"
+            label={t('admin.announcementsPageForm.body')}
             required
             value={form.body}
             onChange={(e) => setForm({ ...form, body: e.target.value })}
           />
           <Select
-            label="Category"
+            label={t('admin.announcementsPageForm.category')}
             required
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value as Announcement['category'] })}
             options={[
-              { value: 'news', label: 'News' },
-              { value: 'training', label: 'Training' },
-              { value: 'match', label: 'Match' },
-              { value: 'event', label: 'Event' },
-              { value: 'notice', label: 'Notice' },
+              { value: 'news', label: t('admin.announcementsPageForm.catNews') },
+              { value: 'training', label: t('admin.announcementsPageForm.catTraining') },
+              { value: 'match', label: t('admin.announcementsPageForm.catMatch') },
+              { value: 'event', label: t('admin.announcementsPageForm.catEvent') },
+              { value: 'notice', label: t('admin.announcementsPageForm.catNotice') },
             ]}
           />
           <label className="flex items-center gap-2 text-sm text-pitch/80">
@@ -166,14 +179,14 @@ export default function AdminAnnouncements() {
               onChange={(e) => setForm({ ...form, published: e.target.checked })}
               className="h-4 w-4 rounded border-line-soft"
             />
-            Publish immediately
+            {t('admin.announcementsPageForm.publishImmediately')}
           </label>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editingId ? 'Save changes' : 'Publish'}
+              {editingId ? t('common.save') : t('admin.announcementsPageForm.publish')}
             </Button>
           </div>
         </form>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, deleteDocById } from '../../lib/collections'
 import type { Program } from '../../types'
@@ -12,6 +13,7 @@ type FormState = { name: string; ageRange: string; description: string; price: s
 const emptyForm: FormState = { name: '', ageRange: '', description: '', price: '', order: '0' }
 
 export default function AdminPrograms() {
+  const { t } = useTranslation()
   const { data: programs, loading } = useCollection<Program>('programs')
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -56,35 +58,35 @@ export default function AdminPrograms() {
       }
       if (editingId) {
         await updateDocById('programs', editingId, payload)
-        setStatus({ type: 'success', message: 'Program updated.' })
+        setStatus({ type: 'success', message: t('admin.programsPageForm.updated') })
       } else {
         await createDoc('programs', payload)
-        setStatus({ type: 'success', message: 'Program created.' })
+        setStatus({ type: 'success', message: t('admin.programsPageForm.created') })
       }
       setModalOpen(false)
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Something went wrong.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.somethingWrong') })
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(p: Program) {
-    if (!confirm(`Delete program "${p.name}"?`)) return
+    if (!confirm(t('admin.programsPageForm.deleteConfirm', { name: p.name }))) return
     try {
       await deleteDocById('programs', p.id)
-      setStatus({ type: 'success', message: `${p.name} deleted.` })
+      setStatus({ type: 'success', message: t('admin.programsPageForm.deleted', { name: p.name }) })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to delete.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.failedDelete') })
     }
   }
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl text-pitch">Training programs</h1>
+        <h1 className="text-3xl text-pitch">{t('admin.programsPage')}</h1>
         <Button size="sm" onClick={openAdd}>
-          + Add program
+          + {t('admin.addProgram')}
         </Button>
       </div>
 
@@ -94,7 +96,7 @@ export default function AdminPrograms() {
         {loading ? (
           <div className="h-40 animate-pulse rounded-card bg-line-soft/30" />
         ) : sorted.length === 0 ? (
-          <EmptyState title="No programs yet" hint="Add age-group programs shown on the public Programs page." />
+          <EmptyState title={t('emptyStates.noPrograms')} hint={t('emptyStates.noProgramsHint')} />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {sorted.map((p) => (
@@ -105,10 +107,10 @@ export default function AdminPrograms() {
                 {p.price && <p className="mt-2 text-sm font-medium text-grass">{p.price}</p>}
                 <div className="mt-4 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={() => openEdit(p)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(p)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </div>
@@ -117,37 +119,37 @@ export default function AdminPrograms() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit program' : 'Add program'}>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? t('common.edit') : t('admin.addProgram')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Program name"
+            label={t('admin.programsPageForm.programName')}
             required
-            placeholder="e.g. Mini Stars"
+            placeholder={t('admin.programsPageForm.programNamePlaceholder')}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <Input
-            label="Age range"
+            label={t('admin.programsPageForm.ageRange')}
             required
-            placeholder="e.g. Ages 5–7"
+            placeholder={t('admin.programsPageForm.ageRangePlaceholder')}
             value={form.ageRange}
             onChange={(e) => setForm({ ...form, ageRange: e.target.value })}
           />
           <Textarea
-            label="Description"
+            label={t('admin.programsPageForm.description')}
             required
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Price (optional)"
-              placeholder="e.g. EGP 1,500/month"
+              label={t('admin.programsPageForm.price')}
+              placeholder={t('admin.programsPageForm.pricePlaceholder')}
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
             />
             <Input
-              label="Display order"
+              label={t('admin.programsPageForm.displayOrder')}
               type="number"
               value={form.order}
               onChange={(e) => setForm({ ...form, order: e.target.value })}
@@ -155,10 +157,10 @@ export default function AdminPrograms() {
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editingId ? 'Save changes' : 'Add program'}
+              {editingId ? t('common.save') : t('admin.addProgram')}
             </Button>
           </div>
         </form>

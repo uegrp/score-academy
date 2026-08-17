@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, orderBy } from '../../lib/collections'
 import type { Registration, Player } from '../../types'
@@ -7,6 +8,7 @@ import Button from '../../components/ui/Button'
 import StatusBanner from '../../components/ui/StatusBanner'
 
 export default function AdminRegistrations() {
+  const { t } = useTranslation()
   const { data: registrations, loading } = useCollection<Registration>('registrations', [
     orderBy('submittedAt', 'desc'),
   ])
@@ -15,6 +17,11 @@ export default function AdminRegistrations() {
 
   const pending = registrations.filter((r) => r.status === 'pending')
   const decided = registrations.filter((r) => r.status !== 'pending')
+
+  const statusLabel: Record<string, string> = {
+    approved: t('common.approved'),
+    rejected: t('common.rejected'),
+  }
 
   async function handleApprove(r: Registration) {
     setBusyId(r.id)
@@ -40,23 +47,23 @@ export default function AdminRegistrations() {
       }
       await createDoc('players', playerPayload)
       await updateDocById('registrations', r.id, { status: 'approved' })
-      setStatus({ type: 'success', message: `${r.player.fullName} approved and added as an active player.` })
+      setStatus({ type: 'success', message: t('admin.registrationsPageForm.approved', { name: r.player.fullName }) })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to approve.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.registrationsPageForm.failedApprove') })
     } finally {
       setBusyId(null)
     }
   }
 
   async function handleReject(r: Registration) {
-    if (!confirm(`Reject the application for ${r.player.fullName}?`)) return
+    if (!confirm(t('admin.registrationsPageForm.rejectConfirm', { name: r.player.fullName }))) return
     setBusyId(r.id)
     setStatus(null)
     try {
       await updateDocById('registrations', r.id, { status: 'rejected' })
-      setStatus({ type: 'success', message: 'Application rejected.' })
+      setStatus({ type: 'success', message: t('admin.registrationsPageForm.rejected') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to reject.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.registrationsPageForm.failedReject') })
     } finally {
       setBusyId(null)
     }
@@ -64,16 +71,16 @@ export default function AdminRegistrations() {
 
   return (
     <div>
-      <h1 className="text-3xl text-pitch">Registrations</h1>
+      <h1 className="text-3xl text-pitch">{t('admin.registrationsPage')}</h1>
       <StatusBanner status={status} />
 
       <section className="mt-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Pending review</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('admin.pendingReview')}</h2>
         {loading ? (
           <div className="mt-3 h-32 animate-pulse rounded-card bg-line-soft/30" />
         ) : pending.length === 0 ? (
           <div className="mt-3">
-            <EmptyState title="No pending registrations" hint="New player applications will appear here for review." />
+            <EmptyState title={t('emptyStates.noRegistrations')} hint={t('emptyStates.noRegistrationsHint')} />
           </div>
         ) : (
           <div className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
@@ -82,18 +89,19 @@ export default function AdminRegistrations() {
                 <div>
                   <p className="font-medium text-pitch">{r.player.fullName}</p>
                   <p className="text-sm text-pitch/60">
-                    {r.player.preferredPosition} · {r.player.currentLevel} · DOB {r.player.dateOfBirth}
+                    {r.player.preferredPosition} · {r.player.currentLevel} · {t('admin.registrationsPageForm.dob')}{' '}
+                    {r.player.dateOfBirth}
                   </p>
                   <p className="text-sm text-pitch/60">
-                    Parent: {r.parentName} · {r.parentPhone} · {r.parentEmail}
+                    {t('admin.registrationsPageForm.parentLabel')}: {r.parentName} · {r.parentPhone} · {r.parentEmail}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" loading={busyId === r.id} onClick={() => handleApprove(r)}>
-                    Approve
+                    {t('admin.approve')}
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleReject(r)} disabled={busyId === r.id}>
-                    Reject
+                    {t('admin.reject')}
                   </Button>
                 </div>
               </div>
@@ -103,9 +111,9 @@ export default function AdminRegistrations() {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Decided</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('admin.decided')}</h2>
         {decided.length === 0 ? (
-          <p className="mt-3 text-sm text-pitch/50">No decisions made yet.</p>
+          <p className="mt-3 text-sm text-pitch/50">{t('admin.registrationsPageForm.noDecisions')}</p>
         ) : (
           <div className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {decided.map((r) => (
@@ -116,7 +124,7 @@ export default function AdminRegistrations() {
                     r.status === 'approved' ? 'bg-grass/10 text-grass' : 'bg-danger/10 text-danger'
                   }`}
                 >
-                  {r.status}
+                  {statusLabel[r.status]}
                 </span>
               </div>
             ))}

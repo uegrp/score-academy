@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
@@ -5,6 +6,7 @@ import type { Player, TrainingSession, Announcement } from '../../types'
 import { where } from '../../lib/collections'
 
 export default function ParentDashboard() {
+  const { t } = useTranslation()
   const { appUser } = useAuth()
 
   const { data: players, loading: playersLoading } = useCollection<Player>(
@@ -16,18 +18,17 @@ export default function ParentDashboard() {
 
   return (
     <div>
-      <p className="eyebrow text-grass">Parent dashboard</p>
-      <h1 className="mt-2 text-4xl text-pitch">Welcome back{appUser?.displayName ? `, ${appUser.displayName.split(' ')[0]}` : ''}.</h1>
+      <p className="eyebrow text-grass">{t('parent.dashboardEyebrow')}</p>
+      <h1 className="mt-2 text-4xl text-pitch">
+        {t('parent.welcomeBack', { name: appUser?.displayName ? `, ${appUser.displayName.split(' ')[0]}` : '' })}
+      </h1>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Your players</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('parent.yourPlayers')}</h2>
         {playersLoading ? (
           <SkeletonRow />
         ) : players.length === 0 ? (
-          <EmptyState
-            title="No players linked yet"
-            hint="Once your registration is approved by an admin, the player profile will appear here."
-          />
+          <EmptyState title={t('parent.noPlayersLinked')} hint={t('parent.noPlayersLinkedHint')} />
         ) : (
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {players.map((p) => (
@@ -35,7 +36,7 @@ export default function ParentDashboard() {
                 <p className="text-lg font-semibold text-pitch">{p.fullName}</p>
                 <p className="text-sm text-pitch/60">{p.preferredPosition} · {p.currentLevel}</p>
                 <span className="mt-3 inline-block rounded-full bg-grass/10 px-3 py-1 text-xs font-medium text-grass">
-                  {p.status === 'active' ? 'Active' : p.status === 'pending' ? 'Pending review' : 'Archived'}
+                  {p.status === 'active' ? t('common.active') : p.status === 'pending' ? t('parent.pendingReview') : t('common.archived')}
                 </span>
               </div>
             ))}
@@ -45,9 +46,9 @@ export default function ParentDashboard() {
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <section>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Upcoming training</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('parent.upcomingTraining')}</h2>
           {sessions.length === 0 ? (
-            <EmptyState title="No upcoming training sessions" />
+            <EmptyState title={t('emptyStates.noTraining')} />
           ) : (
             <ul className="mt-4 space-y-3">
               {sessions.slice(0, 4).map((s) => (
@@ -61,9 +62,9 @@ export default function ParentDashboard() {
         </section>
 
         <section>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Announcements</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('parent.announcements')}</h2>
           {announcements.length === 0 ? (
-            <EmptyState title="No announcements yet" />
+            <EmptyState title={t('emptyStates.noAnnouncements')} />
           ) : (
             <ul className="mt-4 space-y-3">
               {announcements.slice(0, 4).map((a) => (

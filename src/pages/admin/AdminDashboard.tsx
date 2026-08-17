@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
 import type { Player, Coach, Team, Match, Registration } from '../../types'
 import { where } from '../../lib/collections'
 
 export default function AdminDashboard() {
+  const { t } = useTranslation()
   const { data: players } = useCollection<Player>('players')
   const { data: coaches } = useCollection<Coach>('coaches')
   const { data: teams } = useCollection<Team>('teams')
@@ -14,22 +16,22 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <p className="eyebrow text-grass">Admin</p>
-      <h1 className="mt-2 text-4xl text-pitch">Academy overview</h1>
+      <p className="eyebrow text-grass">{t('admin.dashboardEyebrow')}</p>
+      <h1 className="mt-2 text-4xl text-pitch">{t('admin.overview')}</h1>
 
       <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Total players" value={players.length} />
-        <StatCard label="Active players" value={activePlayers.length} />
-        <StatCard label="Coaches" value={coaches.length} />
-        <StatCard label="Teams" value={teams.length} />
-        <StatCard label="Upcoming matches" value={matches.filter((m) => m.date > Date.now()).length} />
-        <StatCard label="Pending registrations" value={pending.length} highlight={pending.length > 0} />
+        <StatCard label={t('admin.totalPlayers')} value={players.length} />
+        <StatCard label={t('admin.activePlayers')} value={activePlayers.length} />
+        <StatCard label={t('admin.coaches')} value={coaches.length} />
+        <StatCard label={t('admin.teams')} value={teams.length} />
+        <StatCard label={t('admin.upcomingMatches')} value={matches.filter((m) => m.date > Date.now()).length} />
+        <StatCard label={t('admin.pendingRegistrations')} value={pending.length} highlight={pending.length > 0} />
       </div>
 
       <section className="mt-10">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Pending registrations</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('admin.pendingRegistrations')}</h2>
         {pending.length === 0 ? (
-          <EmptyState title="No pending registrations" hint="New player applications will appear here for review." />
+          <EmptyState title={t('emptyStates.noRegistrations')} hint={t('emptyStates.noRegistrationsHint')} />
         ) : (
           <div className="mt-4 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
             {pending.map((r) => (
@@ -40,7 +42,7 @@ export default function AdminDashboard() {
                     {r.parentName} · {r.parentEmail}
                   </p>
                 </div>
-                <span className="rounded-full bg-warn/10 px-3 py-1 text-xs font-medium text-warn">Pending</span>
+                <span className="rounded-full bg-warn/10 px-3 py-1 text-xs font-medium text-warn">{t('common.pending')}</span>
               </div>
             ))}
           </div>

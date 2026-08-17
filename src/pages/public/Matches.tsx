@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
 import type { Match } from '../../types'
 import { orderBy } from '../../lib/collections'
 
 export default function Matches() {
+  const { t } = useTranslation()
   const { data: matches, loading } = useCollection<Match>('matches', [orderBy('date', 'asc')])
   const now = Date.now()
   const upcoming = matches.filter((m) => m.date >= now)
@@ -11,17 +13,17 @@ export default function Matches() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 pb-28 md:px-8 lg:pb-16">
-      <p className="eyebrow text-grass">Fixtures</p>
-      <h1 className="mt-2 text-4xl text-pitch md:text-5xl">Matches</h1>
+      <p className="eyebrow text-grass">{t('matchesPage.eyebrow')}</p>
+      <h1 className="mt-2 text-4xl text-pitch md:text-5xl">{t('matchesPage.title')}</h1>
 
       {loading ? (
         <div className="mt-10 h-32 animate-pulse rounded-card bg-line-soft/20" />
       ) : (
         <>
           <section className="mt-10">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Upcoming</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('matchesPage.upcoming')}</h2>
             {upcoming.length === 0 ? (
-              <EmptyState title="No matches scheduled" />
+              <EmptyState title={t('matchesPage.noUpcoming')} />
             ) : (
               <ul className="mt-4 space-y-3">
                 {upcoming.map((m) => <MatchRow key={m.id} match={m} />)}
@@ -30,9 +32,9 @@ export default function Matches() {
           </section>
 
           <section className="mt-10">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">Results</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('matchesPage.results')}</h2>
             {previous.length === 0 ? (
-              <EmptyState title="No previous matches yet" />
+              <EmptyState title={t('matchesPage.noPrevious')} />
             ) : (
               <ul className="mt-4 space-y-3">
                 {previous.map((m) => <MatchRow key={m.id} match={m} />)}

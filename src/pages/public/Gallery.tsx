@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import type { GalleryItem } from '../../types'
 import kidsImg from '../../assets/images/kids-training.jpg'
@@ -25,13 +26,14 @@ const SEED_IMAGES = [
 ]
 
 export default function Gallery() {
+  const { t } = useTranslation()
   const { data } = useCollection<GalleryItem>('gallery')
   const images = data.length > 0 ? data.map((d) => d.imageUrl) : SEED_IMAGES
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 pb-28 md:px-8 lg:pb-16">
-      <p className="eyebrow text-grass">Gallery</p>
-      <h1 className="mt-2 text-4xl text-pitch md:text-5xl">On the pitch</h1>
+      <p className="eyebrow text-grass">{t('galleryPage.eyebrow')}</p>
+      <h1 className="mt-2 text-4xl text-pitch md:text-5xl">{t('galleryPage.title')}</h1>
 
       <div className="mt-10 columns-2 gap-3 md:columns-3 [&>*]:mb-3">
         {images.map((src, i) => (

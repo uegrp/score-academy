@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, where } from '../../lib/collections'
@@ -8,41 +9,26 @@ import Button from '../../components/ui/Button'
 import { Select, Textarea } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
 
-const LEVELS: { value: SkillLevel; label: string }[] = [
-  { value: 'beginner', label: 'Beginner' },
-  { value: 'developing', label: 'Developing' },
-  { value: 'good', label: 'Good' },
-  { value: 'very_good', label: 'Very Good' },
-  { value: 'excellent', label: 'Excellent' },
-]
-
 const TECHNICAL = ['passing', 'dribbling', 'ballControl', 'shooting', 'firstTouch'] as const
 const PHYSICAL = ['speed', 'agility', 'stamina', 'strength'] as const
 const MENTAL = ['discipline', 'confidence', 'teamwork', 'decisionMaking'] as const
-
-const LABELS: Record<string, string> = {
-  passing: 'Passing',
-  dribbling: 'Dribbling',
-  ballControl: 'Ball Control',
-  shooting: 'Shooting',
-  firstTouch: 'First Touch',
-  speed: 'Speed',
-  agility: 'Agility',
-  stamina: 'Stamina',
-  strength: 'Strength',
-  discipline: 'Discipline',
-  confidence: 'Confidence',
-  teamwork: 'Teamwork',
-  decisionMaking: 'Decision Making',
-}
 
 type Ratings = Record<string, SkillLevel>
 const defaultRatings = (): Ratings =>
   Object.fromEntries([...TECHNICAL, ...PHYSICAL, ...MENTAL].map((k) => [k, 'developing' as SkillLevel]))
 
 export default function CoachEvaluations() {
+  const { t } = useTranslation()
   const { appUser } = useAuth()
   const teamIds = appUser?.linkedTeamIds ?? []
+
+  const LEVELS: { value: SkillLevel; label: string }[] = [
+    { value: 'beginner', label: t('coach.skillLevels.beginner') },
+    { value: 'developing', label: t('coach.skillLevels.developing') },
+    { value: 'good', label: t('coach.skillLevels.good') },
+    { value: 'very_good', label: t('coach.skillLevels.very_good') },
+    { value: 'excellent', label: t('coach.skillLevels.excellent') },
+  ]
 
   const { data: players } = useCollection<Player>(
     'players',
@@ -91,11 +77,11 @@ export default function CoachEvaluations() {
         },
         notes: notes.trim() || undefined,
       })
-      setStatus({ type: 'success', message: 'Evaluation saved.' })
+      setStatus({ type: 'success', message: t('coach.evaluationSaved') })
       setRatings(defaultRatings())
       setNotes('')
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to save.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('coach.failedToSave') })
     } finally {
       setSaving(false)
     }
@@ -108,7 +94,7 @@ export default function CoachEvaluations() {
         <div className="mt-3 space-y-3">
           {keys.map((k) => (
             <div key={k} className="flex items-center justify-between gap-3">
-              <p className="text-sm text-pitch/80">{LABELS[k]}</p>
+              <p className="text-sm text-pitch/80">{t(`coach.attributes.${k}`)}</p>
               <select
                 value={ratings[k]}
                 onChange={(e) => setRating(k, e.target.value as SkillLevel)}
@@ -129,43 +115,43 @@ export default function CoachEvaluations() {
 
   return (
     <div>
-      <h1 className="text-3xl text-pitch">Performance evaluation</h1>
+      <h1 className="text-3xl text-pitch">{t('coach.evaluation')}</h1>
       <StatusBanner status={status} />
 
       {teamIds.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="No teams assigned yet" />
+          <EmptyState title={t('emptyStates.noTeamsAssignedYet')} />
         </div>
       ) : players.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="No players to evaluate yet" />
+          <EmptyState title={t('emptyStates.noPlayersToEvaluate')} />
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="mt-6 max-w-2xl space-y-6">
           <Select
-            label="Player"
+            label={t('coach.selectPlayer')}
             required
             value={playerId}
             onChange={(e) => setPlayerId(e.target.value)}
-            placeholder="Select player"
+            placeholder={t('coach.selectPlayer')}
             options={players.map((p) => ({ value: p.id, label: p.fullName }))}
           />
 
           {playerId && (
             <>
               <div className="grid gap-6 rounded-card border border-line-soft bg-white p-5 sm:grid-cols-3">
-                <Group title="Technical" keys={TECHNICAL} />
-                <Group title="Physical" keys={PHYSICAL} />
-                <Group title="Mental" keys={MENTAL} />
+                <Group title={t('coach.technical')} keys={TECHNICAL} />
+                <Group title={t('coach.physical')} keys={PHYSICAL} />
+                <Group title={t('coach.mental')} keys={MENTAL} />
               </div>
               <Textarea
-                label="Coaching notes (optional)"
+                label={t('coach.coachingNotes')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Observations, focus areas for next session…"
+                placeholder={t('coach.notesPlaceholder')}
               />
               <Button type="submit" loading={saving}>
-                Save evaluation
+                {t('coach.saveEvaluation')}
               </Button>
             </>
           )}

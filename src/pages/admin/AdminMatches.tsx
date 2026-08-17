@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, deleteDocById } from '../../lib/collections'
 import type { Match, Team } from '../../types'
@@ -30,6 +31,7 @@ const emptyForm: FormState = {
 }
 
 export default function AdminMatches() {
+  const { t } = useTranslation()
   const { data: matches, loading } = useCollection<Match>('matches')
   const { data: teams } = useCollection<Team>('teams')
 
@@ -40,7 +42,7 @@ export default function AdminMatches() {
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const sorted = [...matches].sort((a, b) => a.date - b.date)
-  const teamName = (id: string) => teams.find((t) => t.id === id)?.name ?? 'Unknown team'
+  const teamName = (id: string) => teams.find((tm) => tm.id === id)?.name ?? t('admin.matchesPageForm.unknownTeam')
 
   function openAdd() {
     setEditingId(null)
@@ -84,70 +86,70 @@ export default function AdminMatches() {
       }
       if (editingId) {
         await updateDocById('matches', editingId, payload)
-        setStatus({ type: 'success', message: 'Match updated.' })
+        setStatus({ type: 'success', message: t('admin.matchesPageForm.updated') })
       } else {
         await createDoc('matches', payload)
-        setStatus({ type: 'success', message: 'Match created.' })
+        setStatus({ type: 'success', message: t('admin.matchesPageForm.created') })
       }
       setModalOpen(false)
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Something went wrong.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.somethingWrong') })
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(m: Match) {
-    if (!confirm(`Delete match vs ${m.opponent}?`)) return
+    if (!confirm(t('admin.matchesPageForm.deleteConfirm', { opponent: m.opponent }))) return
     try {
       await deleteDocById('matches', m.id)
-      setStatus({ type: 'success', message: 'Match deleted.' })
+      setStatus({ type: 'success', message: t('admin.matchesPageForm.deleted') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to delete.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.failedDelete') })
     }
   }
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl text-pitch">Matches</h1>
+        <h1 className="text-3xl text-pitch">{t('admin.matchesPage')}</h1>
         <Button size="sm" onClick={openAdd} disabled={teams.length === 0}>
-          + Add match
+          + {t('admin.addMatch')}
         </Button>
       </div>
 
       <StatusBanner status={status} />
-      {teams.length === 0 && <p className="mt-3 text-sm text-warn">Create a team first before adding matches.</p>}
+      {teams.length === 0 && <p className="mt-3 text-sm text-warn">{t('admin.matchesPageForm.createTeamFirst')}</p>}
 
       <div className="mt-6">
         {loading ? (
           <div className="h-40 animate-pulse rounded-card bg-line-soft/30" />
         ) : sorted.length === 0 ? (
-          <EmptyState title="No matches scheduled" hint="Add the first fixture for a team." />
+          <EmptyState title={t('emptyStates.noMatches')} hint={t('emptyStates.noMatchesHint')} />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {sorted.map((m) => (
               <div key={m.id} className="rounded-card border border-line-soft bg-white p-5">
                 <p className="font-semibold text-pitch">
-                  {teamName(m.teamId)} vs {m.opponent}
+                  {teamName(m.teamId)} {t('admin.matchesPageForm.vs')} {m.opponent}
                 </p>
                 <p className="mt-1 text-sm text-pitch/60">
-                  {new Date(m.date).toLocaleDateString()} · {m.kickoffTime} · {m.isHome ? 'Home' : 'Away'} ·{' '}
-                  {m.location}
+                  {new Date(m.date).toLocaleDateString()} · {m.kickoffTime} ·{' '}
+                  {m.isHome ? t('matchesPage.home') : t('matchesPage.away')} · {m.location}
                 </p>
                 {m.result ? (
                   <p className="mt-2 text-lg font-semibold text-grass">
                     {m.result.scoreFor} – {m.result.scoreAgainst}
                   </p>
                 ) : (
-                  <p className="mt-2 text-sm text-pitch/40">Result not entered yet</p>
+                  <p className="mt-2 text-sm text-pitch/40">{t('admin.matchesPageForm.resultNotEntered')}</p>
                 )}
                 <div className="mt-4 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={() => openEdit(m)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(m)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </div>
@@ -156,32 +158,32 @@ export default function AdminMatches() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Edit match' : 'Add match'}>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? t('common.edit') : t('admin.addMatch')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Select
-            label="Team"
+            label={t('admin.matchesPageForm.team')}
             required
             value={form.teamId}
             onChange={(e) => setForm({ ...form, teamId: e.target.value })}
-            placeholder="Select team"
-            options={teams.map((t) => ({ value: t.id, label: t.name }))}
+            placeholder={t('admin.matchesPageForm.selectTeam')}
+            options={teams.map((tm) => ({ value: tm.id, label: tm.name }))}
           />
           <Input
-            label="Opponent"
+            label={t('admin.matchesPageForm.opponent')}
             required
             value={form.opponent}
             onChange={(e) => setForm({ ...form, opponent: e.target.value })}
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Date"
+              label={t('admin.matchesPageForm.date')}
               type="date"
               required
               value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
             />
             <Input
-              label="Kickoff time"
+              label={t('admin.matchesPageForm.kickoffTime')}
               type="time"
               required
               value={form.kickoffTime}
@@ -189,31 +191,31 @@ export default function AdminMatches() {
             />
           </div>
           <Input
-            label="Location"
+            label={t('admin.matchesPageForm.location')}
             required
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
           />
           <Select
-            label="Home or away"
+            label={t('admin.matchesPageForm.homeOrAway')}
             required
             value={form.isHome}
             onChange={(e) => setForm({ ...form, isHome: e.target.value as 'true' | 'false' })}
             options={[
-              { value: 'true', label: 'Home' },
-              { value: 'false', label: 'Away' },
+              { value: 'true', label: t('matchesPage.home') },
+              { value: 'false', label: t('matchesPage.away') },
             ]}
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Score for (optional)"
+              label={t('admin.matchesPageForm.scoreFor')}
               type="number"
               min={0}
               value={form.scoreFor}
               onChange={(e) => setForm({ ...form, scoreFor: e.target.value })}
             />
             <Input
-              label="Score against (optional)"
+              label={t('admin.matchesPageForm.scoreAgainst')}
               type="number"
               min={0}
               value={form.scoreAgainst}
@@ -222,10 +224,10 @@ export default function AdminMatches() {
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editingId ? 'Save changes' : 'Add match'}
+              {editingId ? t('common.save') : t('admin.addMatch')}
             </Button>
           </div>
         </form>

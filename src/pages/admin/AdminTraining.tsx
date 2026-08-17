@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, deleteDocById } from '../../lib/collections'
 import type { TrainingSession, Team, Coach } from '../../types'
@@ -28,6 +29,7 @@ const emptyForm: FormState = {
 }
 
 export default function AdminTraining() {
+  const { t } = useTranslation()
   const { data: sessions, loading } = useCollection<TrainingSession>('trainingSessions')
   const { data: teams } = useCollection<Team>('teams')
   const { data: coaches } = useCollection<Coach>('coaches')
@@ -39,8 +41,14 @@ export default function AdminTraining() {
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const sorted = [...sessions].sort((a, b) => a.date - b.date)
-  const teamName = (id: string) => teams.find((t) => t.id === id)?.name ?? 'Unknown team'
-  const coachName = (id: string) => coaches.find((c) => c.id === id)?.fullName ?? 'Unassigned'
+  const teamName = (id: string) => teams.find((tm) => tm.id === id)?.name ?? t('admin.trainingPageForm.unknownTeam')
+  const coachName = (id: string) => coaches.find((c) => c.id === id)?.fullName ?? t('admin.trainingPageForm.unassigned')
+
+  const statusLabel: Record<string, string> = {
+    scheduled: t('common.scheduled'),
+    completed: t('common.completed'),
+    cancelled: t('common.cancelled'),
+  }
 
   function openAdd() {
     setEditingId(null)
@@ -80,58 +88,58 @@ export default function AdminTraining() {
       }
       if (editingId) {
         await updateDocById('trainingSessions', editingId, payload)
-        setStatus({ type: 'success', message: 'Session updated.' })
+        setStatus({ type: 'success', message: t('admin.trainingPageForm.updated') })
       } else {
         await createDoc('trainingSessions', payload)
-        setStatus({ type: 'success', message: 'Session scheduled.' })
+        setStatus({ type: 'success', message: t('admin.trainingPageForm.scheduled') })
       }
       setModalOpen(false)
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Something went wrong.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.somethingWrong') })
     } finally {
       setSaving(false)
     }
   }
 
   async function handleCancel(s: TrainingSession) {
-    if (!confirm('Mark this session as cancelled?')) return
+    if (!confirm(t('admin.trainingPageForm.cancelConfirm'))) return
     try {
       await updateDocById('trainingSessions', s.id, { status: 'cancelled' })
-      setStatus({ type: 'success', message: 'Session cancelled.' })
+      setStatus({ type: 'success', message: t('admin.trainingPageForm.cancelled') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to cancel.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.trainingPageForm.failedCancel') })
     }
   }
 
   async function handleDelete(s: TrainingSession) {
-    if (!confirm('Delete this session permanently?')) return
+    if (!confirm(t('admin.trainingPageForm.deleteConfirm'))) return
     try {
       await deleteDocById('trainingSessions', s.id)
-      setStatus({ type: 'success', message: 'Session deleted.' })
+      setStatus({ type: 'success', message: t('admin.trainingPageForm.deleted') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to delete.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('admin.playersPage.failedDelete') })
     }
   }
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl text-pitch">Training schedule</h1>
+        <h1 className="text-3xl text-pitch">{t('admin.trainingPage')}</h1>
         <Button size="sm" onClick={openAdd} disabled={teams.length === 0}>
-          + Schedule session
+          + {t('admin.scheduleSession')}
         </Button>
       </div>
 
       <StatusBanner status={status} />
       {teams.length === 0 && (
-        <p className="mt-3 text-sm text-warn">Create a team first before scheduling training sessions.</p>
+        <p className="mt-3 text-sm text-warn">{t('admin.trainingPageForm.createTeamFirst')}</p>
       )}
 
       <div className="mt-6">
         {loading ? (
           <div className="h-40 animate-pulse rounded-card bg-line-soft/30" />
         ) : sorted.length === 0 ? (
-          <EmptyState title="No upcoming training sessions" hint="Schedule the first session for a team." />
+          <EmptyState title={t('emptyStates.noTraining')} hint={t('emptyStates.noTrainingHint')} />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {sorted.map((s) => (
@@ -147,26 +155,26 @@ export default function AdminTraining() {
                           : 'bg-grass/10 text-grass'
                     }`}
                   >
-                    {s.status}
+                    {statusLabel[s.status]}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-pitch/60">
                   {new Date(s.date).toLocaleDateString()} · {s.time} · {s.location}
                 </p>
                 <p className="text-sm text-pitch/60">
-                  {s.type} · Coach: {coachName(s.coachId)}
+                  {s.type} · {t('admin.trainingPageForm.coach')}: {coachName(s.coachId)}
                 </p>
                 <div className="mt-4 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={() => openEdit(s)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   {s.status === 'scheduled' && (
                     <Button size="sm" variant="ghost" className="!text-pitch !border-line-soft" onClick={() => handleCancel(s)}>
-                      Cancel
+                      {t('common.cancelled')}
                     </Button>
                   )}
                   <Button size="sm" variant="danger" onClick={() => handleDelete(s)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </div>
@@ -178,27 +186,27 @@ export default function AdminTraining() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingId ? 'Edit session' : 'Schedule session'}
+        title={editingId ? t('common.edit') : t('admin.scheduleSession')}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <Select
-            label="Team"
+            label={t('admin.trainingPageForm.team')}
             required
             value={form.teamId}
             onChange={(e) => setForm({ ...form, teamId: e.target.value })}
-            placeholder="Select team"
-            options={teams.map((t) => ({ value: t.id, label: t.name }))}
+            placeholder={t('admin.trainingPageForm.selectTeam')}
+            options={teams.map((tm) => ({ value: tm.id, label: tm.name }))}
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Date"
+              label={t('admin.trainingPageForm.date')}
               type="date"
               required
               value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
             />
             <Input
-              label="Time"
+              label={t('admin.trainingPageForm.time')}
               type="time"
               required
               value={form.time}
@@ -206,43 +214,43 @@ export default function AdminTraining() {
             />
           </div>
           <Input
-            label="Location"
+            label={t('admin.trainingPageForm.location')}
             required
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
           />
           <Select
-            label="Coach"
+            label={t('admin.trainingPageForm.coach')}
             required
             value={form.coachId}
             onChange={(e) => setForm({ ...form, coachId: e.target.value })}
-            placeholder="Select coach"
+            placeholder={t('admin.trainingPageForm.selectCoach')}
             options={coaches.map((c) => ({ value: c.id, label: c.fullName }))}
           />
           <Input
-            label="Training type"
+            label={t('admin.trainingPageForm.trainingType')}
             required
-            placeholder="e.g. Technical, Fitness, Match prep"
+            placeholder={t('admin.trainingPageForm.trainingTypePlaceholder')}
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value })}
           />
           <Select
-            label="Status"
+            label={t('admin.trainingPageForm.status')}
             required
             value={form.status}
             onChange={(e) => setForm({ ...form, status: e.target.value as TrainingSession['status'] })}
             options={[
-              { value: 'scheduled', label: 'Scheduled' },
-              { value: 'completed', label: 'Completed' },
-              { value: 'cancelled', label: 'Cancelled' },
+              { value: 'scheduled', label: t('common.scheduled') },
+              { value: 'completed', label: t('common.completed') },
+              { value: 'cancelled', label: t('common.cancelled') },
             ]}
           />
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editingId ? 'Save changes' : 'Schedule'}
+              {editingId ? t('common.save') : t('admin.scheduleSession')}
             </Button>
           </div>
         </form>

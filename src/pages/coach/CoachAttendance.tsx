@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import { createDoc, updateDocById, where } from '../../lib/collections'
@@ -7,16 +8,17 @@ import EmptyState from '../../components/ui/EmptyState'
 import { Select } from '../../components/ui/FormField'
 import StatusBanner from '../../components/ui/StatusBanner'
 
-const STATUS_OPTIONS: { value: AttendanceStatus; label: string }[] = [
-  { value: 'present', label: 'Present' },
-  { value: 'late', label: 'Late' },
-  { value: 'absent', label: 'Absent' },
-  { value: 'excused', label: 'Excused' },
-]
-
 export default function CoachAttendance() {
+  const { t } = useTranslation()
   const { appUser } = useAuth()
   const teamIds = appUser?.linkedTeamIds ?? []
+
+  const STATUS_OPTIONS: { value: AttendanceStatus; label: string }[] = [
+    { value: 'present', label: t('common.present') },
+    { value: 'late', label: t('common.late') },
+    { value: 'absent', label: t('common.absent') },
+    { value: 'excused', label: t('common.excused') },
+  ]
 
   const { data: teams } = useCollection<Team>(
     'teams',
@@ -66,9 +68,9 @@ export default function CoachAttendance() {
       } else {
         await createDoc('attendance', { sessionId, playerId, status: statusValue, markedAt: Date.now() })
       }
-      setStatus({ type: 'success', message: 'Attendance saved.' })
+      setStatus({ type: 'success', message: t('coach.attendanceSaved') })
     } catch (err) {
-      setStatus({ type: 'error', message: err instanceof Error ? err.message : 'Failed to save.' })
+      setStatus({ type: 'error', message: err instanceof Error ? err.message : t('coach.failedToSave') })
     } finally {
       setSaving(null)
     }
@@ -76,28 +78,28 @@ export default function CoachAttendance() {
 
   return (
     <div>
-      <h1 className="text-3xl text-pitch">Attendance</h1>
+      <h1 className="text-3xl text-pitch">{t('coach.attendance')}</h1>
       <StatusBanner status={status} />
 
       {teamIds.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="No teams assigned yet" />
+          <EmptyState title={t('emptyStates.noTeamsAssignedYet')} />
         </div>
       ) : sortedSessions.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="No training sessions to mark yet" hint="An admin schedules sessions for your teams." />
+          <EmptyState title={t('emptyStates.noSessionsToMark')} hint={t('emptyStates.noSessionsToMarkHint')} />
         </div>
       ) : (
         <>
           <div className="mt-5 max-w-sm">
             <Select
-              label="Session"
+              label={t('coach.session')}
               value={sessionId}
               onChange={(e) => setSessionId(e.target.value)}
-              placeholder="Select a training session"
+              placeholder={t('coach.selectSession')}
               options={sortedSessions.map((s) => ({
                 value: s.id,
-                label: `${teams.find((t) => t.id === s.teamId)?.name ?? 'Team'} · ${new Date(s.date).toLocaleDateString()} ${s.time}`,
+                label: `${teams.find((tm) => tm.id === s.teamId)?.name ?? t('coach.team')} · ${new Date(s.date).toLocaleDateString()} ${s.time}`,
               }))}
             />
           </div>
@@ -105,7 +107,7 @@ export default function CoachAttendance() {
           {sessionId && (
             <div className="mt-6">
               {players.length === 0 ? (
-                <EmptyState title="No players in this team yet" />
+                <EmptyState title={t('coach.noPlayersInSessionTeam')} />
               ) : (
                 <div className="divide-y divide-line-soft rounded-card border border-line-soft bg-white">
                   {players.map((p) => {

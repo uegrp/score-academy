@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Button from '../../components/ui/Button'
 import ProgramCard from '../../components/cards/ProgramCard'
 import PlayerAttributeCard from '../../components/cards/PlayerAttributeCard'
@@ -12,28 +13,29 @@ import { useCollection } from '../../hooks/useCollection'
 import type { Announcement, Program } from '../../types'
 import { orderBy, where } from '../../lib/collections'
 
-const WHY_SCORE = [
-  { title: 'Professional Coaching', copy: 'Licensed coaches with structured, age-appropriate curricula for every stage.' },
-  { title: 'Player Development', copy: 'Individual growth plans tracked evaluation by evaluation, not guesswork.' },
-  { title: 'Technical Skills', copy: 'First touch, passing, and finishing drilled with real repetition.' },
-  { title: 'Physical Development', copy: 'Conditioning built for a growing athlete, not an adult program.' },
-  { title: 'Teamwork', copy: 'Small-sided games and match play that reward the team, not the individual.' },
-  { title: 'Performance Tracking', copy: 'Every session and evaluation logged, visible to parents in real time.' },
-]
-
-const FALLBACK_PROGRAMS = [
-  { id: 'mini-stars', name: 'Mini Stars', ageRange: 'Ages 5–7', description: 'First touches on the ball, coordination, and the joy of the game.' },
-  { id: 'junior', name: 'Junior Development', ageRange: 'Ages 8–10', description: 'Building technical foundations — control, passing, and small-sided play.' },
-  { id: 'youth', name: 'Youth Development', ageRange: 'Ages 11–13', description: 'Tactical understanding, position-specific work, and competitive matches.' },
-  { id: 'advanced', name: 'Advanced Academy', ageRange: 'Ages 14–17', description: 'High-performance training for players targeting the next level.' },
-]
-
 export default function Home() {
+  const { t } = useTranslation()
   const { data: programsData } = useCollection<Program>('programs', [orderBy('order', 'asc')])
   const { data: announcements } = useCollection<Announcement>('announcements', [
     where('published', '==', true),
     orderBy('publishedAt', 'desc'),
   ])
+
+  const WHY_SCORE = [
+    { title: t('home.why1Title'), copy: t('home.why1Body') },
+    { title: t('home.why2Title'), copy: t('home.why2Body') },
+    { title: t('home.why3Title'), copy: t('home.why3Body') },
+    { title: t('home.why4Title'), copy: t('home.why4Body') },
+    { title: t('home.why5Title'), copy: t('home.why5Body') },
+    { title: t('home.why6Title'), copy: t('home.why6Body') },
+  ]
+
+  const FALLBACK_PROGRAMS = [
+    { id: 'mini-stars', name: t('programsPage.miniStars'), ageRange: 'Ages 5–7', description: t('programsPage.miniStarsDesc') },
+    { id: 'junior', name: t('programsPage.junior'), ageRange: 'Ages 8–10', description: t('programsPage.juniorDesc') },
+    { id: 'youth', name: t('programsPage.youth'), ageRange: 'Ages 11–13', description: t('programsPage.youthDesc') },
+    { id: 'advanced', name: t('programsPage.advanced'), ageRange: 'Ages 14–17', description: t('programsPage.advancedDesc') },
+  ]
 
   const programs = programsData.length > 0 ? programsData : FALLBACK_PROGRAMS
 
@@ -49,22 +51,20 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-pitch via-pitch/70 to-pitch/10" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
-          <p className="eyebrow text-grass-bright">Football Academy</p>
+          <p className="eyebrow text-grass-bright">{t('home.eyebrow')}</p>
           <h1 className="mt-3 max-w-3xl text-5xl text-bone md:text-7xl">
-            Build Your Game.
+            {t('home.headline1')}
             <br />
-            Shape Your Future.
+            {t('home.headline2')}
           </h1>
-          <p className="mt-5 max-w-xl text-base text-bone-dim md:text-lg">
-            Professional football training designed to develop skills, confidence, discipline, and teamwork.
-          </p>
+          <p className="mt-5 max-w-xl text-base text-bone-dim md:text-lg">{t('home.subtext')}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/register">
-              <Button size="lg">Join SCORE</Button>
+              <Button size="lg">{t('home.joinCta')}</Button>
             </Link>
             <Link to="/programs">
               <Button size="lg" variant="ghost">
-                Explore Academy
+                {t('home.exploreCta')}
               </Button>
             </Link>
           </div>
@@ -75,22 +75,18 @@ export default function Home() {
       <section className="bg-bone py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 md:grid-cols-2 md:px-8 md:gap-16">
           <div>
-            <p className="eyebrow text-grass">About SCORE</p>
-            <h2 className="mt-3 text-4xl text-pitch">A structured path from first touch to first team.</h2>
+            <p className="eyebrow text-grass">{t('home.aboutEyebrow')}</p>
+            <h2 className="mt-3 text-4xl text-pitch">{t('home.aboutTitle')}</h2>
           </div>
-          <p className="self-center text-base leading-relaxed text-pitch/80">
-            SCORE is dedicated to developing young football players through structured training, professional
-            coaching, teamwork, discipline, and continuous performance development. Every player follows a clear
-            program, tracked by real coaches, visible to real parents.
-          </p>
+          <p className="self-center text-base leading-relaxed text-pitch/80">{t('home.aboutBody')}</p>
         </div>
       </section>
 
       {/* WHY SCORE */}
       <section className="bg-pitch py-20">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <p className="eyebrow text-grass-bright">Why SCORE</p>
-          <h2 className="mt-3 max-w-xl text-4xl text-bone">A development system, not just a training slot.</h2>
+          <p className="eyebrow text-grass-bright">{t('home.whyEyebrow')}</p>
+          <h2 className="mt-3 max-w-xl text-4xl text-bone">{t('home.whyTitle')}</h2>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_SCORE.map((item) => (
@@ -108,11 +104,14 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="eyebrow text-grass">Training Programs</p>
-              <h2 className="mt-3 text-4xl text-pitch">Find your age group.</h2>
+              <p className="eyebrow text-grass">{t('home.programsEyebrow')}</p>
+              <h2 className="mt-3 text-4xl text-pitch">{t('home.programsTitle')}</h2>
             </div>
-            <Link to="/programs" className="eyebrow text-grass hover:text-grass-bright">
-              View all programs →
+            <Link to="/programs" className="eyebrow flex items-center gap-1 text-grass hover:text-grass-bright">
+              {t('home.viewAllPrograms')}
+              <span aria-hidden="true" className="rtl:-scale-x-100">
+                →
+              </span>
             </Link>
           </div>
 
@@ -129,12 +128,9 @@ export default function Home() {
         <img src={conesImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" aria-hidden="true" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-4 md:grid-cols-2 md:items-center md:px-8">
           <div>
-            <p className="eyebrow text-gold-bright">Performance Tracking</p>
-            <h2 className="mt-3 text-4xl text-bone">Every player gets a real profile — not a guess.</h2>
-            <p className="mt-4 max-w-md text-bone-dim">
-              Coaches log technical, physical, and mental evaluations after every session. Parents see progress the
-              same way a scout would read it.
-            </p>
+            <p className="eyebrow text-gold-bright">{t('home.performanceEyebrow')}</p>
+            <h2 className="mt-3 text-4xl text-bone">{t('home.performanceTitle')}</h2>
+            <p className="mt-4 max-w-md text-bone-dim">{t('home.performanceBody')}</p>
           </div>
           <div className="flex justify-center md:justify-end">
             <PlayerAttributeCard
@@ -159,11 +155,14 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="eyebrow text-grass">Gallery</p>
-              <h2 className="mt-3 text-4xl text-pitch">On the pitch, every week.</h2>
+              <p className="eyebrow text-grass">{t('home.galleryEyebrow')}</p>
+              <h2 className="mt-3 text-4xl text-pitch">{t('home.galleryTitle')}</h2>
             </div>
-            <Link to="/gallery" className="eyebrow text-grass hover:text-grass-bright">
-              View gallery →
+            <Link to="/gallery" className="eyebrow flex items-center gap-1 text-grass hover:text-grass-bright">
+              {t('home.viewGallery')}
+              <span aria-hidden="true" className="rtl:-scale-x-100">
+                →
+              </span>
             </Link>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -182,11 +181,11 @@ export default function Home() {
       {/* NEWS PREVIEW */}
       <section className="bg-pitch py-20">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <p className="eyebrow text-grass-bright">Latest</p>
-          <h2 className="mt-3 text-4xl text-bone">News &amp; Announcements</h2>
+          <p className="eyebrow text-grass-bright">{t('home.newsEyebrow')}</p>
+          <h2 className="mt-3 text-4xl text-bone">{t('home.newsTitle')}</h2>
 
           {announcements.length === 0 ? (
-            <p className="mt-8 max-w-md text-bone-dim">No announcements yet. Check back soon.</p>
+            <p className="mt-8 max-w-md text-bone-dim">{t('home.noNews')}</p>
           ) : (
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {announcements.slice(0, 3).map((a) => (
@@ -206,11 +205,11 @@ export default function Home() {
         <img src={stadiumImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-t from-pitch via-pitch/60 to-pitch/40" />
         <div className="relative z-10 mx-auto max-w-3xl px-4 text-center md:px-8">
-          <h2 className="text-4xl text-bone md:text-5xl">Ready to join SCORE?</h2>
-          <p className="mt-4 text-bone-dim">Registration takes a few minutes. Coaches review every application.</p>
+          <h2 className="text-4xl text-bone md:text-5xl">{t('home.ctaTitle')}</h2>
+          <p className="mt-4 text-bone-dim">{t('home.ctaBody')}</p>
           <div className="mt-8 flex justify-center">
             <Link to="/register">
-              <Button size="lg">Join SCORE</Button>
+              <Button size="lg">{t('home.joinCta')}</Button>
             </Link>
           </div>
         </div>

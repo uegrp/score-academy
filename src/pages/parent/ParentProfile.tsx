@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import type { Player, Team } from '../../types'
@@ -7,13 +8,14 @@ import EmptyState from '../../components/ui/EmptyState'
 import { Select } from '../../components/ui/FormField'
 
 export default function ParentProfile() {
+  const { t } = useTranslation()
   const { appUser } = useAuth()
   const { data: players } = useCollection<Player>('players', appUser ? [where('parentUserId', '==', appUser.uid)] : [])
   const { data: teams } = useCollection<Team>('teams')
   const [playerId, setPlayerId] = useState('')
 
   const activePlayer = players.find((p) => p.id === playerId) ?? players[0]
-  const team = teams.find((t) => t.id === activePlayer?.teamId)
+  const team = teams.find((tm) => tm.id === activePlayer?.teamId)
 
   function age(dob: string) {
     const d = new Date(dob)
@@ -24,18 +26,18 @@ export default function ParentProfile() {
 
   return (
     <div>
-      <h1 className="text-3xl text-pitch">Player profile</h1>
+      <h1 className="text-3xl text-pitch">{t('parent.profile')}</h1>
 
       {players.length === 0 ? (
         <div className="mt-6">
-          <EmptyState title="No player linked yet" hint="Once your registration is approved, the profile appears here." />
+          <EmptyState title={t('emptyStates.noPlayerLinked')} hint={t('emptyStates.noPlayerLinkedHint')} />
         </div>
       ) : (
         <>
           {players.length > 1 && (
             <div className="mt-5 max-w-xs">
               <Select
-                label="Player"
+                label={t('parent.player')}
                 value={playerId || players[0].id}
                 onChange={(e) => setPlayerId(e.target.value)}
                 options={players.map((p) => ({ value: p.id, label: p.fullName }))}
@@ -51,21 +53,25 @@ export default function ParentProfile() {
                   activePlayer.status === 'active' ? 'bg-grass/10 text-grass' : 'bg-warn/10 text-warn'
                 }`}
               >
-                {activePlayer.status === 'active' ? 'Active' : activePlayer.status === 'pending' ? 'Pending review' : 'Archived'}
+                {activePlayer.status === 'active'
+                  ? t('common.active')
+                  : activePlayer.status === 'pending'
+                    ? t('parent.pendingReview')
+                    : t('common.archived')}
               </span>
 
               <dl className="mt-5 grid grid-cols-2 gap-y-4 text-sm">
-                <Field label="Age" value={String(age(activePlayer.dateOfBirth))} />
-                <Field label="Position" value={activePlayer.preferredPosition} />
-                <Field label="Team" value={team?.name ?? 'Not assigned'} />
-                <Field label="Level" value={activePlayer.currentLevel} />
-                <Field label="Nationality" value={activePlayer.nationality} />
-                <Field label="Joining date" value={new Date(activePlayer.joiningDate).toLocaleDateString()} />
-                {activePlayer.previousClub && <Field label="Previous club" value={activePlayer.previousClub} />}
+                <Field label={t('parent.age')} value={String(age(activePlayer.dateOfBirth))} />
+                <Field label={t('parent.position')} value={activePlayer.preferredPosition} />
+                <Field label={t('parent.team')} value={team?.name ?? t('parent.notAssigned')} />
+                <Field label={t('parent.level')} value={activePlayer.currentLevel} />
+                <Field label={t('auth.nationality')} value={activePlayer.nationality} />
+                <Field label={t('parent.joiningDate')} value={new Date(activePlayer.joiningDate).toLocaleDateString()} />
+                {activePlayer.previousClub && <Field label={t('parent.previousClub')} value={activePlayer.previousClub} />}
               </dl>
 
               <div className="mt-5 border-t border-line-soft pt-4">
-                <p className="text-xs uppercase tracking-wide text-pitch/50">Emergency contact</p>
+                <p className="text-xs uppercase tracking-wide text-pitch/50">{t('parent.emergencyContact')}</p>
                 <p className="mt-1 text-sm text-pitch/80">
                   {activePlayer.emergencyContact.name} · {activePlayer.emergencyContact.phone}
                 </p>
