@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Button from '../../components/ui/Button'
 import ProgramCard from '../../components/cards/ProgramCard'
 import PlayerAttributeCard from '../../components/cards/PlayerAttributeCard'
+import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
 import logo from '../../assets/images/score-logo.png'
 import heroImg from '../../assets/images/team-huddle.jpg'
 import trainingImg from '../../assets/images/kids-training.jpg'
@@ -84,17 +85,23 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WHY SCORE */}
-      <section className="bg-pitch py-20">
-        <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <p className="eyebrow text-grass-bright">{t('home.whyEyebrow')}</p>
-          <h2 className="mt-3 max-w-xl text-4xl text-bone">{t('home.whyTitle')}</h2>
+      {/* WHY SCORE — bright & vibrant, not a dark corporate block */}
+      <section className="relative overflow-hidden bg-bone py-20">
+        <BackgroundBlobs />
+        <div className="relative mx-auto max-w-7xl px-4 md:px-8">
+          <p className="eyebrow text-grass">{t('home.whyEyebrow')}</p>
+          <h2 className="mt-3 max-w-xl text-4xl text-pitch">{t('home.whyTitle')}</h2>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {WHY_SCORE.map((item) => (
-              <div key={item.title} className="rounded-card border border-line-soft bg-pitch-soft p-6">
-                <h3 className="text-xl text-bone">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-bone-dim">{item.copy}</p>
+            {WHY_SCORE.map((item, i) => (
+              <div
+                key={item.title}
+                className={`rounded-card border-t-4 bg-white p-6 shadow-sm transition-shadow hover:shadow-lg ${
+                  i % 3 === 0 ? 'border-grass' : i % 3 === 1 ? 'border-gold' : 'border-grass-bright'
+                }`}
+              >
+                <h3 className="text-xl text-pitch">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-pitch/70">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -125,9 +132,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PERFORMANCE SYSTEM (signature element) */}
-      <section className="relative overflow-hidden bg-pitch py-20">
-        <img src={conesImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" aria-hidden="true" />
+      {/* PERFORMANCE SYSTEM (signature element) — colorful brand-tinted overlay, not flat dark */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-pitch via-grass/30 to-pitch py-20">
+        <img src={conesImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-luminosity" aria-hidden="true" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-4 md:grid-cols-2 md:items-center md:px-8">
           <div>
             <p className="eyebrow text-gold-bright">{t('home.performanceEyebrow')}</p>
@@ -180,21 +187,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NEWS PREVIEW */}
-      <section className="bg-pitch py-20">
+      {/* NEWS PREVIEW — bright, matching the rest of the light theme */}
+      <section className="bg-bone py-20">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <p className="eyebrow text-grass-bright">{t('home.newsEyebrow')}</p>
-          <h2 className="mt-3 text-4xl text-bone">{t('home.newsTitle')}</h2>
+          <p className="eyebrow text-grass">{t('home.newsEyebrow')}</p>
+          <h2 className="mt-3 text-4xl text-pitch">{t('home.newsTitle')}</h2>
 
           {announcements.length === 0 ? (
-            <p className="mt-8 max-w-md text-bone-dim">{t('home.noNews')}</p>
+            <p className="mt-8 max-w-md text-pitch/60">{t('home.noNews')}</p>
           ) : (
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {announcements.slice(0, 3).map((a) => (
-                <article key={a.id} className="rounded-card border border-line-soft bg-pitch-soft p-6">
-                  <p className="eyebrow text-grass-bright">{a.category}</p>
-                  <h3 className="mt-2 text-xl text-bone">{a.title}</h3>
-                  <p className="mt-2 line-clamp-3 text-sm text-bone-dim">{a.body}</p>
+                <article key={a.id} className="rounded-card border-t-4 border-gold bg-white p-6 shadow-sm transition-shadow hover:shadow-lg">
+                  <p className="eyebrow text-gold">{a.category}</p>
+                  <h3 className="mt-2 text-xl text-pitch">{a.title}</h3>
+                  <p className="mt-2 line-clamp-3 text-sm text-pitch/60">{a.body}</p>
                 </article>
               ))}
             </div>
@@ -202,10 +209,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className="relative overflow-hidden bg-pitch py-24">
-        <img src={stadiumImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" aria-hidden="true" />
-        <div className="absolute inset-0 bg-gradient-to-t from-pitch via-pitch/60 to-pitch/40" />
+      {/* FINAL CTA — colorful gradient, not flat dark */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-grass via-pitch to-gold/70 py-24">
+        <img src={stadiumImg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20 mix-blend-luminosity" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-t from-pitch/80 via-pitch/40 to-transparent" />
         <div className="relative z-10 mx-auto max-w-3xl px-4 text-center md:px-8">
           <h2 className="text-4xl text-bone md:text-5xl">{t('home.ctaTitle')}</h2>
           <p className="mt-4 text-bone-dim">{t('home.ctaBody')}</p>

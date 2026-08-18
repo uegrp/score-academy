@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../../components/ui/Button'
 import ForgotPassword from '../../components/auth/ForgotPassword'
+import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
 import logo from '../../assets/images/score-logo.png'
 
 const NORMAL_ROLES = ['player', 'parent', 'coach'] as const
@@ -15,6 +17,12 @@ const ROLE_DASHBOARD: Record<NormalRole, string> = {
   coach: '/coach',
 }
 
+const ROLE_ICON: Record<NormalRole, string> = {
+  player: '⚽',
+  parent: '👪',
+  coach: '📋',
+}
+
 function isNormalRole(value: string | null): value is NormalRole {
   return !!value && (NORMAL_ROLES as readonly string[]).includes(value)
 }
@@ -22,9 +30,9 @@ function isNormalRole(value: string | null): value is NormalRole {
 /**
  * The single login entry point for Player / Parent / Coach — per the
  * SCORE auth architecture, Admin never shares this page or URL (see
- * AdminLogin.tsx at /admin/login instead). The role tabs here are pure
- * UX: the real authorization check is signInAndGetRole() comparing the
- * Firestore-stored role against the selected tab, never the tab itself.
+ * AdminLogin.tsx at /admin/login instead). Role selection is pure UX:
+ * the real authorization check is signInAndGetRole() comparing the
+ * Firestore-stored role against the selected card, never the card itself.
  */
 export default function Login() {
   const { t } = useTranslation()
@@ -33,7 +41,10 @@ export default function Login() {
   const [searchParams] = useSearchParams()
 
   const preselected = searchParams.get('role')
-  const [selectedRole, setSelectedRole] = useState<NormalRole>(isNormalRole(preselected) ? preselected : 'parent')
+  // If we arrived here via a redirect from a protected route (e.g. someone
+  // hit /coach directly while signed out), skip straight to the form —
+  // otherwise start on the role-choice screen.
+  const [selectedRole, setSelectedRole] = useState<NormalRole | null>(isNormalRole(preselected) ? preselected : null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -41,6 +52,7 @@ export default function Login() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    if (!selectedRole) return
     setError(null)
     setLoading(true)
     try {
@@ -51,7 +63,7 @@ export default function Login() {
       }
       // The password was correct, but this account isn't the role they
       // picked — never let them into the wrong dashboard. Sign back out
-      // and tell them exactly which tab their account actually is.
+      // and tell them exactly which card their account actually is.
       await signOut()
       if (actualRole === 'admin' || actualRole === 'super_admin') {
         setError(t('auth.errors.isAdminAccount'))
@@ -68,35 +80,79 @@ export default function Login() {
     }
   }
 
-  const roleTabs: { key: NormalRole; label: string }[] = [
-    { key: 'player', label: t('auth.roleNames.player') },
-    { key: 'parent', label: t('auth.roleNames.parent') },
-    { key: 'coach', label: t('auth.roleNames.coach') },
+  const roleCards: { key: NormalRole; label: string; hint: string }[] = [
+    { key: 'player', label: t('auth.roleNames.player'), hint: t('auth.playerLoginHint') },
+    { key: 'parent', label: t('auth.roleNames.parent'), hint: t('auth.parentLoginHint') },
+    { key: 'coach', label: t('auth.roleNames.coach'), hint: t('auth.coachLoginHint') },
   ]
 
-  return (
-    <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
-      <div className="w-full max-w-sm">
-        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
-        <p className="mt-8 eyebrow text-grass">{t('auth.loginEyebrow')}</p>
-        <h1 className="mt-2 text-4xl text-pitch">{t('auth.whoAreYou')}</h1>
+  // ---- Step 1: choose role ----
+  if (!selectedRole) {
+    return (
+      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden bg-bone px-4 py-16">
+        <BackgroundBlobs />
+        <div className="relative w-full max-w-sm">
+          <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+          <p className="mt-8 text-center eyebrow text-grass">{t('auth.loginEyebrow')}</p>
+          <h1 className="mt-2 text-center text-4xl text-pitch">{t('auth.whoAreYou')}</h1>
 
-        <div className="mt-6 grid grid-cols-3 gap-2">
-          {roleTabs.map((r) => (
-            <button
-              key={r.key}
-              type="button"
-              onClick={() => {
-                setSelectedRole(r.key)
-                setError(null)
-              }}
-              className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
-                selectedRole === r.key ? 'border-grass bg-grass/10 text-grass' : 'border-line text-pitch/60 hover:text-pitch'
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
+          <div className="mt-8 flex flex-col gap-3">
+            {roleCards.map((r, i) => (
+              <motion.button
+                key={r.key}
+                type="button"
+                onClick={() => setSelectedRole(r.key)}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.3, ease: 'easeOut' }}
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ y: -2 }}
+                className="flex items-center gap-4 rounded-card border border-line-soft bg-white p-5 text-start shadow-sm transition-shadow hover:border-grass hover:shadow-lg"
+              >
+                <span className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-full bg-grass/10 text-2xl" aria-hidden="true">
+                  {ROLE_ICON[r.key]}
+                </span>
+                <span>
+                  <span className="block text-lg font-semibold text-pitch">{r.label}</span>
+                  <span className="block text-sm text-pitch/60">{r.hint}</span>
+                </span>
+              </motion.button>
+            ))}
+          </div>
+
+          <p className="mt-6 text-center text-sm text-pitch/70">
+            {t('auth.newToScore')}{' '}
+            <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
+              {t('auth.joinAcademy')}
+            </Link>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // ---- Step 2: sign in as the selected role ----
+  return (
+    <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden bg-bone px-4 py-16">
+      <BackgroundBlobs />
+      <div className="relative w-full max-w-sm">
+        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+        <button
+          type="button"
+          onClick={() => setSelectedRole(null)}
+          className="mt-6 flex items-center gap-1 text-sm text-pitch/60 hover:text-pitch"
+        >
+          <span aria-hidden="true" className="rtl:-scale-x-100">←</span> {t('auth.backToAccountType')}
+        </button>
+
+        <div className="mt-4 flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-grass/10 text-xl" aria-hidden="true">
+            {ROLE_ICON[selectedRole]}
+          </span>
+          <div>
+            <p className="eyebrow text-grass">{t('auth.roleNames.' + selectedRole)}</p>
+            <h1 className="text-2xl text-pitch">{t('auth.signIn')}</h1>
+          </div>
         </div>
 
         {!configured && (
@@ -137,13 +193,6 @@ export default function Login() {
         <div className="mt-4 text-center">
           <ForgotPassword />
         </div>
-
-        <p className="mt-6 text-center text-sm text-pitch/70">
-          {t('auth.newToScore')}{' '}
-          <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
-            {t('auth.joinAcademy')}
-          </Link>
-        </p>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
+import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
 import type { Player, TrainingSession, Announcement } from '../../types'
 import { where } from '../../lib/collections'
 
@@ -18,7 +19,9 @@ export default function ParentDashboard() {
   const { data: sessions } = useCollection<TrainingSession>('trainingSessions')
 
   return (
-    <div>
+    <div className="relative">
+      <BackgroundBlobs />
+      <div className="relative">
       <p className="eyebrow text-grass">{t('parent.dashboardEyebrow')}</p>
       <h1 className="mt-2 text-4xl text-pitch">
         {t('parent.welcomeBack', { name: appUser?.displayName ? `, ${appUser.displayName.split(' ')[0]}` : '' })}
@@ -105,6 +108,7 @@ export default function ParentDashboard() {
             </ul>
           )}
         </section>
+      </div>
       </div>
     </div>
   )

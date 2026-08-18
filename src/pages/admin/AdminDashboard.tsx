@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
 import StatCard from '../../components/ui/StatCard'
+import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
 import type { Player, Coach, Team, Match, Registration } from '../../types'
 import { where } from '../../lib/collections'
 
@@ -16,7 +17,9 @@ export default function AdminDashboard() {
   const activePlayers = players.filter((p) => p.status === 'active')
 
   return (
-    <div>
+    <div className="relative">
+      <BackgroundBlobs />
+      <div className="relative">
       <p className="eyebrow text-grass">{t('admin.dashboardEyebrow')}</p>
       <h1 className="mt-2 text-4xl text-pitch">{t('admin.overview')}</h1>
 
@@ -49,6 +52,7 @@ export default function AdminDashboard() {
           </div>
         )}
       </section>
+      </div>
     </div>
   )
 }

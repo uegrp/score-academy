@@ -9,6 +9,7 @@ import { computeFifaAttributes } from '../../lib/fifaCard'
 import FifaPlayerCard from '../../components/player/FifaPlayerCard'
 import AnimatedNumber from '../../components/motion/AnimatedNumber'
 import AnimatedCheckbox from '../../components/motion/AnimatedCheckbox'
+import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function PlayerDashboard() {
@@ -72,67 +73,70 @@ export default function PlayerDashboard() {
   const attendancePct = total > 0 ? Math.round(((present + late * 0.5) / total) * 100) : null
 
   return (
-    <div>
-      <p className="eyebrow text-grass">{t('player.dashboardEyebrow')}</p>
-      <h1 className="mt-2 text-4xl text-pitch">{t('player.welcome', { name: player.fullName.split(' ')[0] })}</h1>
+    <div className="relative">
+      <BackgroundBlobs />
+      <div className="relative">
+        <p className="eyebrow text-grass">{t('player.dashboardEyebrow')}</p>
+        <h1 className="mt-2 text-4xl text-pitch">{t('player.welcome', { name: player.fullName.split(' ')[0] })}</h1>
 
-      <div className="mt-8 flex flex-wrap gap-6">
-        {evalLoading ? (
-          <div className="h-96 w-full max-w-sm animate-pulse rounded-card bg-line-soft/30" />
-        ) : attributes ? (
-          <FifaPlayerCard
-            name={player.fullName}
-            position={player.preferredPosition}
-            teamName={teamName}
-            jerseyNumber={player.jerseyNumber}
-            photoUrl={player.photoUrl}
-            attributes={attributes}
-          />
-        ) : (
-          <div className="w-full max-w-sm">
-            <EmptyState title={t('player.noEvaluationYet')} hint={t('player.noEvaluationYetHint')} />
-          </div>
-        )}
-
-        <div className="grid flex-1 grid-cols-2 gap-4 self-start sm:grid-cols-3">
-          {attendancePct !== null ? (
-            <div className="rounded-card border border-line-soft bg-white p-4">
-              <AnimatedNumber value={attendancePct} suffix="%" className="stat-figure block text-xl text-pitch" />
-              <p className="mt-1 text-xs uppercase tracking-wide text-pitch/60">{t('player.attendanceRate')}</p>
-            </div>
+        <div className="mt-8 flex flex-wrap gap-6">
+          {evalLoading ? (
+            <div className="h-96 w-full max-w-sm animate-pulse rounded-card bg-line-soft/30" />
+          ) : attributes ? (
+            <FifaPlayerCard
+              name={player.fullName}
+              position={player.preferredPosition}
+              teamName={teamName}
+              jerseyNumber={player.jerseyNumber}
+              photoUrl={player.photoUrl}
+              attributes={attributes}
+            />
           ) : (
-            <StatCard label={t('player.attendanceRate')} value="—" />
+            <div className="w-full max-w-sm">
+              <EmptyState title={t('player.noEvaluationYet')} hint={t('player.noEvaluationYetHint')} />
+            </div>
           )}
-          <StatCard label={t('parent.team')} value={teamName ?? t('parent.notAssigned')} />
-          <StatCard label={t('auth.currentLevel')} value={player.currentLevel} />
-        </div>
-      </div>
 
-      <div className="mt-8">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('player.tasksPage.today')}</p>
-          <Link to="/player/tasks" className="text-sm font-medium text-grass hover:text-grass-bright">
-            {t('player.tasksPage.viewAll')}
-          </Link>
-        </div>
-        {todaysTasks.length === 0 ? (
-          <p className="mt-3 text-sm text-pitch/50">{t('player.tasksPage.noneToday')}</p>
-        ) : (
-          <div className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
-            {todaysTasks.map((task) => (
-              <div key={task.id} className="flex items-center gap-3 p-4">
-                <AnimatedCheckbox checked={task.completed} onChange={() => toggleTask(task)} label={task.title} />
-                <button
-                  type="button"
-                  onClick={() => toggleTask(task)}
-                  className={`text-start ${task.completed ? 'text-pitch/40 line-through' : 'text-pitch'}`}
-                >
-                  {task.title}
-                </button>
+          <div className="grid flex-1 grid-cols-2 gap-4 self-start sm:grid-cols-3">
+            {attendancePct !== null ? (
+              <div className="rounded-card border border-line-soft bg-white p-4">
+                <AnimatedNumber value={attendancePct} suffix="%" className="stat-figure block text-xl text-pitch" />
+                <p className="mt-1 text-xs uppercase tracking-wide text-pitch/60">{t('player.attendanceRate')}</p>
               </div>
-            ))}
+            ) : (
+              <StatCard label={t('player.attendanceRate')} value="—" />
+            )}
+            <StatCard label={t('parent.team')} value={teamName ?? t('parent.notAssigned')} />
+            <StatCard label={t('auth.currentLevel')} value={player.currentLevel} />
           </div>
-        )}
+        </div>
+
+        <div className="mt-8">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold uppercase tracking-wide text-pitch/60">{t('player.tasksPage.today')}</p>
+            <Link to="/player/tasks" className="text-sm font-medium text-grass hover:text-grass-bright">
+              {t('player.tasksPage.viewAll')}
+            </Link>
+          </div>
+          {todaysTasks.length === 0 ? (
+            <p className="mt-3 text-sm text-pitch/50">{t('player.tasksPage.noneToday')}</p>
+          ) : (
+            <div className="mt-3 divide-y divide-line-soft rounded-card border border-line-soft bg-white">
+              {todaysTasks.map((task) => (
+                <div key={task.id} className="flex items-center gap-3 p-4">
+                  <AnimatedCheckbox checked={task.completed} onChange={() => toggleTask(task)} label={task.title} />
+                  <button
+                    type="button"
+                    onClick={() => toggleTask(task)}
+                    className={`text-start ${task.completed ? 'text-pitch/40 line-through' : 'text-pitch'}`}
+                  >
+                    {task.title}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

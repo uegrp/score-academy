@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useCollection } from '../../hooks/useCollection'
 import EmptyState from '../../components/ui/EmptyState'
 import StatCard from '../../components/ui/StatCard'
+import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
 import { StaggerContainer, StaggerItem } from '../../components/motion/Stagger'
 import type { Team, Player } from '../../types'
 import { where } from '../../lib/collections'
@@ -24,7 +25,9 @@ export default function CoachDashboard() {
   )
 
   return (
-    <div>
+    <div className="relative">
+      <BackgroundBlobs />
+      <div className="relative">
       <p className="eyebrow text-grass">{t('coach.dashboardEyebrow')}</p>
       <h1 className="mt-2 text-4xl text-pitch">
         {t('coach.welcome', { name: appUser?.displayName ? `, Coach ${appUser.displayName.split(' ')[0]}` : '' })}
@@ -55,6 +58,7 @@ export default function CoachDashboard() {
           </StaggerContainer>
         )}
       </section>
+      </div>
     </div>
   )
 }
