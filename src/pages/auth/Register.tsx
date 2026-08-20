@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import AuthBackground from '../../components/auth/AuthBackground'
+import authBg from '../../assets/images/auth-bg-register.jpg'
 import logo from '../../assets/images/score-logo.png'
 import ParentRegisterForm from './ParentRegisterForm'
 import PlayerRegisterForm from './PlayerRegisterForm'
@@ -19,8 +21,8 @@ export default function Register() {
   if (accountType === 'player') return <PlayerRegisterForm onBack={() => setAccountType(null)} />
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
-      <div className="w-full max-w-sm text-center">
+    <AuthBackground image={authBg}>
+      <div className="text-center">
         <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
         <p className="mt-8 eyebrow text-grass">{t('auth.registerEyebrow')}</p>
         <h1 className="mt-2 text-4xl text-pitch">{t('auth.whatAccountType')}</h1>
@@ -44,6 +46,6 @@ export default function Register() {
           </button>
         </div>
       </div>
-    </div>
+    </AuthBackground>
   )
 }

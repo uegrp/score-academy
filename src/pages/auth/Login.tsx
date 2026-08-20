@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../../components/ui/Button'
 import ForgotPassword from '../../components/auth/ForgotPassword'
-import BackgroundBlobs from '../../components/ui/BackgroundBlobs'
+import AuthBackground from '../../components/auth/AuthBackground'
+import authBg from '../../assets/images/auth-bg-login.jpg'
 import logo from '../../assets/images/score-logo.png'
 
 const NORMAL_ROLES = ['player', 'parent', 'coach'] as const
@@ -41,9 +42,6 @@ export default function Login() {
   const [searchParams] = useSearchParams()
 
   const preselected = searchParams.get('role')
-  // If we arrived here via a redirect from a protected route (e.g. someone
-  // hit /coach directly while signed out), skip straight to the form —
-  // otherwise start on the role-choice screen.
   const [selectedRole, setSelectedRole] = useState<NormalRole | null>(isNormalRole(preselected) ? preselected : null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -61,9 +59,6 @@ export default function Login() {
         navigate(ROLE_DASHBOARD[selectedRole])
         return
       }
-      // The password was correct, but this account isn't the role they
-      // picked — never let them into the wrong dashboard. Sign back out
-      // and tell them exactly which card their account actually is.
       await signOut()
       if (actualRole === 'admin' || actualRole === 'super_admin') {
         setError(t('auth.errors.isAdminAccount'))
@@ -89,112 +84,106 @@ export default function Login() {
   // ---- Step 1: choose role ----
   if (!selectedRole) {
     return (
-      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden bg-bone px-4 py-16">
-        <BackgroundBlobs />
-        <div className="relative w-full max-w-sm">
-          <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
-          <p className="mt-8 text-center eyebrow text-grass">{t('auth.loginEyebrow')}</p>
-          <h1 className="mt-2 text-center text-4xl text-pitch">{t('auth.whoAreYou')}</h1>
+      <AuthBackground image={authBg}>
+        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+        <p className="mt-8 text-center eyebrow text-grass">{t('auth.loginEyebrow')}</p>
+        <h1 className="mt-2 text-center text-4xl text-pitch">{t('auth.whoAreYou')}</h1>
 
-          <div className="mt-8 flex flex-col gap-3">
-            {roleCards.map((r, i) => (
-              <motion.button
-                key={r.key}
-                type="button"
-                onClick={() => setSelectedRole(r.key)}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06, duration: 0.3, ease: 'easeOut' }}
-                whileTap={{ scale: 0.97 }}
-                whileHover={{ y: -2 }}
-                className="flex items-center gap-4 rounded-card border border-line-soft bg-white p-5 text-start shadow-sm transition-shadow hover:border-grass hover:shadow-lg"
-              >
-                <span className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-full bg-grass/10 text-2xl" aria-hidden="true">
-                  {ROLE_ICON[r.key]}
-                </span>
-                <span>
-                  <span className="block text-lg font-semibold text-pitch">{r.label}</span>
-                  <span className="block text-sm text-pitch/60">{r.hint}</span>
-                </span>
-              </motion.button>
-            ))}
-          </div>
-
-          <p className="mt-6 text-center text-sm text-pitch/70">
-            {t('auth.newToScore')}{' '}
-            <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
-              {t('auth.joinAcademy')}
-            </Link>
-          </p>
+        <div className="mt-8 flex flex-col gap-3">
+          {roleCards.map((r, i) => (
+            <motion.button
+              key={r.key}
+              type="button"
+              onClick={() => setSelectedRole(r.key)}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06, duration: 0.3, ease: 'easeOut' }}
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-4 rounded-card border border-line-soft bg-white p-5 text-start shadow-sm transition-shadow hover:border-grass hover:shadow-lg"
+            >
+              <span className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-full bg-grass/10 text-2xl" aria-hidden="true">
+                {ROLE_ICON[r.key]}
+              </span>
+              <span>
+                <span className="block text-lg font-semibold text-pitch">{r.label}</span>
+                <span className="block text-sm text-pitch/60">{r.hint}</span>
+              </span>
+            </motion.button>
+          ))}
         </div>
-      </div>
+
+        <p className="mt-6 text-center text-sm text-pitch/70">
+          {t('auth.newToScore')}{' '}
+          <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
+            {t('auth.joinAcademy')}
+          </Link>
+        </p>
+      </AuthBackground>
     )
   }
 
   // ---- Step 2: sign in as the selected role ----
   return (
-    <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden bg-bone px-4 py-16">
-      <BackgroundBlobs />
-      <div className="relative w-full max-w-sm">
-        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
-        <button
-          type="button"
-          onClick={() => setSelectedRole(null)}
-          className="mt-6 flex items-center gap-1 text-sm text-pitch/60 hover:text-pitch"
-        >
-          <span aria-hidden="true" className="rtl:-scale-x-100">←</span> {t('auth.backToAccountType')}
-        </button>
+    <AuthBackground image={authBg}>
+      <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+      <button
+        type="button"
+        onClick={() => setSelectedRole(null)}
+        className="mt-6 flex items-center gap-1 text-sm text-pitch/60 hover:text-pitch"
+      >
+        <span aria-hidden="true" className="rtl:-scale-x-100">←</span> {t('auth.backToAccountType')}
+      </button>
 
-        <div className="mt-4 flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-grass/10 text-xl" aria-hidden="true">
-            {ROLE_ICON[selectedRole]}
-          </span>
-          <div>
-            <p className="eyebrow text-grass">{t('auth.roleNames.' + selectedRole)}</p>
-            <h1 className="text-2xl text-pitch">{t('auth.signIn')}</h1>
-          </div>
-        </div>
-
-        {!configured && (
-          <p className="mt-4 rounded-card border border-warn/40 bg-warn/10 p-3 text-sm text-pitch">
-            {t('auth.notConfigured')}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-          <Field label={t('auth.email')}>
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input"
-            />
-          </Field>
-          <Field label={t('auth.password')}>
-            <input
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input"
-            />
-          </Field>
-
-          {error && <p className="text-sm text-danger">{error}</p>}
-
-          <Button type="submit" loading={loading} className="mt-2 w-full" disabled={!configured}>
-            {t('auth.signIn')}
-          </Button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <ForgotPassword />
+      <div className="mt-4 flex items-center gap-3">
+        <span className="grid h-10 w-10 place-items-center rounded-full bg-grass/10 text-xl" aria-hidden="true">
+          {ROLE_ICON[selectedRole]}
+        </span>
+        <div>
+          <p className="eyebrow text-grass">{t('auth.roleNames.' + selectedRole)}</p>
+          <h1 className="text-2xl text-pitch">{t('auth.signIn')}</h1>
         </div>
       </div>
-    </div>
+
+      {!configured && (
+        <p className="mt-4 rounded-card border border-warn/40 bg-warn/10 p-3 text-sm text-pitch">
+          {t('auth.notConfigured')}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+        <Field label={t('auth.email')}>
+          <input
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label={t('auth.password')}>
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+          />
+        </Field>
+
+        {error && <p className="text-sm text-danger">{error}</p>}
+
+        <Button type="submit" loading={loading} className="mt-2 w-full" disabled={!configured}>
+          {t('auth.signIn')}
+        </Button>
+      </form>
+
+      <div className="mt-4 text-center">
+        <ForgotPassword />
+      </div>
+    </AuthBackground>
   )
 }
 

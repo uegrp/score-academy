@@ -1,12 +1,15 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import logo from '../../assets/images/score-logo.png'
+import loadingBg from '../../assets/images/loading-bg.jpg'
 
 export default function LoadingScreen() {
   const { t } = useTranslation()
   return (
-    <div className="flex min-h-screen items-center justify-center bg-pitch">
-      <div className="flex flex-col items-center gap-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-pitch">
+      <img src={loadingBg} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-b from-pitch/80 via-pitch/60 to-pitch/90" />
+      <div className="relative flex flex-col items-center gap-4">
         <motion.img
           src={logo}
           alt="SCORE"

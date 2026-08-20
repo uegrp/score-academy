@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../ui/Button'
 import ForgotPassword from './ForgotPassword'
+import AuthBackground from './AuthBackground'
+import authBg from '../../assets/images/auth-bg-login.jpg'
 import logo from '../../assets/images/score-logo.png'
 import type { UserRole } from '../../types'
 
@@ -49,61 +51,59 @@ export default function RoleLoginForm({ allowedRoles, redirectTo, eyebrow, title
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
-      <div className="w-full max-w-sm">
-        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
-        <p className="mt-8 eyebrow text-grass">{eyebrow}</p>
-        <h1 className="mt-2 text-4xl text-pitch">{title}</h1>
+    <AuthBackground image={authBg}>
+      <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+      <p className="mt-8 eyebrow text-grass">{eyebrow}</p>
+      <h1 className="mt-2 text-4xl text-pitch">{title}</h1>
 
-        {!configured && (
-          <p className="mt-4 rounded-card border border-warn/40 bg-warn/10 p-3 text-sm text-pitch">
-            {t('auth.notConfigured')}
-          </p>
-        )}
+      {!configured && (
+        <p className="mt-4 rounded-card border border-warn/40 bg-warn/10 p-3 text-sm text-pitch">
+          {t('auth.notConfigured')}
+        </p>
+      )}
 
-        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-          <Field label={t('auth.email')}>
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input"
-            />
-          </Field>
-          <Field label={t('auth.password')}>
-            <input
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input"
-            />
-          </Field>
+      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
+        <Field label={t('auth.email')}>
+          <input
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label={t('auth.password')}>
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+          />
+        </Field>
 
-          {error && <p className="text-sm text-danger">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
-          <Button type="submit" loading={loading} className="mt-2 w-full" disabled={!configured}>
-            {t('auth.signIn')}
-          </Button>
-        </form>
+        <Button type="submit" loading={loading} className="mt-2 w-full" disabled={!configured}>
+          {t('auth.signIn')}
+        </Button>
+      </form>
 
-        <div className="mt-4 text-center">
-          <ForgotPassword />
-        </div>
-
-        {showJoinLink && (
-          <p className="mt-6 text-center text-sm text-pitch/70">
-            {t('auth.newToScore')}{' '}
-            <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
-              {t('auth.joinAcademy')}
-            </Link>
-          </p>
-        )}
+      <div className="mt-4 text-center">
+        <ForgotPassword />
       </div>
-    </div>
+
+      {showJoinLink && (
+        <p className="mt-6 text-center text-sm text-pitch/70">
+          {t('auth.newToScore')}{' '}
+          <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
+            {t('auth.joinAcademy')}
+          </Link>
+        </p>
+      )}
+    </AuthBackground>
   )
 }
 

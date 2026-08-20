@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { createDoc } from '../../lib/collections'
 import type { Registration } from '../../types'
 import logo from '../../assets/images/score-logo.png'
+import authBg from '../../assets/images/auth-bg-register.jpg'
 
 interface FormState {
   playerFullName: string
@@ -146,8 +147,10 @@ export default function ParentRegisterForm({ onBack }: { onBack?: () => void }) 
 
   if (success) {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center bg-bone px-4 py-16">
-        <div className="max-w-md rounded-card border border-grass/30 bg-pitch-soft p-8 text-center">
+      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden px-4 py-16">
+        <img src={authBg} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-pitch/85 via-pitch/70 to-pitch/90" />
+        <div className="relative max-w-md rounded-card border border-grass/30 bg-pitch-soft p-8 text-center">
           <img src={logo} alt="SCORE" className="mx-auto h-9 w-auto rounded-md bg-bone px-2 py-1 object-contain" />
           <p className="mt-6 eyebrow text-grass-bright">{t('auth.successEyebrow')}</p>
           <h1 className="mt-3 text-3xl text-bone">
