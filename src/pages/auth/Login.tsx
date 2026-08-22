@@ -3,11 +3,12 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import Button from '../../components/ui/Button'
 import ForgotPassword from '../../components/auth/ForgotPassword'
-import AuthBackground from '../../components/auth/AuthBackground'
+import GlassAuthCard from '../../components/auth/GlassAuthCard'
+import { GlassEmailField, GlassPasswordField } from '../../components/auth/GlassFormField'
+import GlassSubmitButton from '../../components/auth/GlassSubmitButton'
 import authBg from '../../assets/images/auth-bg-login.jpg'
-import logo from '../../assets/images/score-logo.png'
+import logoWhite from '../../assets/images/score-logo-white.png'
 
 const NORMAL_ROLES = ['player', 'parent', 'coach'] as const
 type NormalRole = (typeof NORMAL_ROLES)[number]
@@ -84,10 +85,12 @@ export default function Login() {
   // ---- Step 1: choose role ----
   if (!selectedRole) {
     return (
-      <AuthBackground image={authBg}>
-        <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
-        <p className="mt-8 text-center eyebrow text-grass">{t('auth.loginEyebrow')}</p>
-        <h1 className="mt-2 text-center text-4xl text-pitch">{t('auth.whoAreYou')}</h1>
+      <GlassAuthCard image={authBg}>
+        <img src={logoWhite} alt="SCORE" className="mx-auto h-9 w-auto object-contain" />
+        <p className="mt-8 text-center text-xs font-medium uppercase tracking-wide text-[#3A8F8B]">
+          {t('auth.loginEyebrow')}
+        </p>
+        <h1 className="mt-2 text-center text-3xl font-semibold text-white">{t('auth.whoAreYou')}</h1>
 
         <div className="mt-8 flex flex-col gap-3">
           {roleCards.map((r, i) => (
@@ -100,99 +103,85 @@ export default function Login() {
               transition={{ delay: i * 0.06, duration: 0.3, ease: 'easeOut' }}
               whileTap={{ scale: 0.97 }}
               whileHover={{ y: -2 }}
-              className="flex items-center gap-4 rounded-card border border-line-soft bg-white p-5 text-start shadow-sm transition-shadow hover:border-grass hover:shadow-lg"
+              className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.06] p-4 text-start transition-colors hover:border-[#3A8F8B]/60 hover:bg-white/[0.1]"
             >
-              <span className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-full bg-grass/10 text-2xl" aria-hidden="true">
+              <span className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-white/10 text-xl" aria-hidden="true">
                 {ROLE_ICON[r.key]}
               </span>
               <span>
-                <span className="block text-lg font-semibold text-pitch">{r.label}</span>
-                <span className="block text-sm text-pitch/60">{r.hint}</span>
+                <span className="block text-base font-semibold text-white">{r.label}</span>
+                <span className="block text-sm text-white/55">{r.hint}</span>
               </span>
             </motion.button>
           ))}
         </div>
 
-        <p className="mt-6 text-center text-sm text-pitch/70">
+        <p className="mt-6 text-center text-sm text-white/60">
           {t('auth.newToScore')}{' '}
-          <Link to="/register" className="font-medium text-grass hover:text-grass-bright">
+          <Link to="/register" className="font-medium text-[#3A8F8B] hover:text-white">
             {t('auth.joinAcademy')}
           </Link>
         </p>
-      </AuthBackground>
+      </GlassAuthCard>
     )
   }
 
   // ---- Step 2: sign in as the selected role ----
   return (
-    <AuthBackground image={authBg}>
-      <img src={logo} alt="SCORE" className="mx-auto h-10 w-auto object-contain" />
+    <GlassAuthCard image={authBg}>
+      <img src={logoWhite} alt="SCORE" className="mx-auto h-9 w-auto object-contain" />
+
       <button
         type="button"
         onClick={() => setSelectedRole(null)}
-        className="mt-6 flex items-center gap-1 text-sm text-pitch/60 hover:text-pitch"
+        className="mt-6 flex items-center gap-1.5 text-sm text-white/55 hover:text-white"
       >
         <span aria-hidden="true" className="rtl:-scale-x-100">←</span> {t('auth.backToAccountType')}
       </button>
 
       <div className="mt-4 flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-full bg-grass/10 text-xl" aria-hidden="true">
+        <span className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-lg" aria-hidden="true">
           {ROLE_ICON[selectedRole]}
         </span>
         <div>
-          <p className="eyebrow text-grass">{t('auth.roleNames.' + selectedRole)}</p>
-          <h1 className="text-2xl text-pitch">{t('auth.signIn')}</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-[#3A8F8B]">{t('auth.roleNames.' + selectedRole)}</p>
+          <h1 className="text-xl font-semibold text-white">{t('auth.signIn')}</h1>
         </div>
       </div>
 
       {!configured && (
-        <p className="mt-4 rounded-card border border-warn/40 bg-warn/10 p-3 text-sm text-pitch">
+        <p className="mt-4 rounded-2xl border border-white/15 bg-white/[0.06] p-3 text-sm text-white/70">
           {t('auth.notConfigured')}
         </p>
       )}
 
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-        <Field label={t('auth.email')}>
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-          />
-        </Field>
-        <Field label={t('auth.password')}>
-          <input
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-          />
-        </Field>
+        <GlassEmailField
+          label={t('auth.email')}
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <GlassPasswordField
+          label={t('auth.password')}
+          required
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        {error && <p className="text-sm text-danger">{error}</p>}
+        {error && <p className="text-sm text-[#E74747]">{error}</p>}
 
-        <Button type="submit" loading={loading} className="mt-2 w-full" disabled={!configured}>
+        <GlassSubmitButton loading={loading} disabled={!configured}>
           {t('auth.signIn')}
-        </Button>
+        </GlassSubmitButton>
       </form>
 
       <div className="mt-4 text-center">
-        <ForgotPassword />
+        <ForgotPassword dark />
       </div>
-    </AuthBackground>
-  )
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="eyebrow text-pitch/60">{label}</span>
-      <div className="mt-1">{children}</div>
-    </label>
+    </GlassAuthCard>
   )
 }
 
